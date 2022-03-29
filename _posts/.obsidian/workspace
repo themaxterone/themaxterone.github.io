@@ -1,0 +1,93 @@
+{
+  "main": {
+    "id": "65c7bc7482fcd414",
+    "type": "split",
+    "children": [
+      {
+        "id": "2949bc8562635a6d",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "2022-03-28-HTB-Blue.md",
+            "mode": "source"
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "aea885932cb690c2",
+    "type": "split",
+    "children": [
+      {
+        "id": "6b470b8b2b542540",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5dbdd661c0d68a9e",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "4dff09659d6652d5",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "117130cb1b3ed076",
+    "type": "split",
+    "children": [
+      {
+        "id": "f87a4b6db428437f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "cba7751b1e127f23",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "2022-03-28-HTB-Blue.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "2949bc8562635a6d",
+  "lastOpenFiles": [
+    "2022-03-28-HTB-Blue.md"
+  ]
+}
