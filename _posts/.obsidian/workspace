@@ -9,7 +9,7 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "2022-03-28-HTB-Blue.md",
+            "file": "2022-03-29-HTB-Mirai.md",
             "mode": "source"
           }
         }
@@ -52,7 +52,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 268
   },
   "right": {
     "id": "117130cb1b3ed076",
@@ -68,7 +68,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "2022-03-28-HTB-Blue.md",
+                "file": "2022-03-29-HTB-Mirai.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -88,6 +88,7 @@
   },
   "active": "2949bc8562635a6d",
   "lastOpenFiles": [
+    "2022-03-29-HTB-Mirai.md",
     "2022-03-28-HTB-Blue.md"
   ]
 }
