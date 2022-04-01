@@ -18,7 +18,7 @@ tags:
 <centre><img src="/assets/images/writeups/granny/granny.png"></centre>
 
 
-[Maquina]() 
+[Maquina](https://app.hackthebox.com/machines/14) 
 
 
 
