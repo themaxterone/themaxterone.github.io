@@ -24,7 +24,28 @@ tags:
 
 ## Reconocimiento
 
+```bash
+sudo nmap -sCV --min-rate 5000 -Pn 10.10.10.
+```
+
+```bash
+
+```
+
 
 
 
 ## Explotación
+
+
+
+
+Flag **User **:
+```powershell
+
+```
+
+Flag ****:
+```powershell
+
+```

@@ -197,9 +197,4 @@ dir
 04/12/2017  10:17 PM                32 root.txt
                1 File(s)             32 bytes
                2 Dir(s)   1,320,980,480 bytes free
-
-C:\Documents and Settings\Administrator\Desktop>type root.txt
-type root.txt
-aa4beed1c0584445ab463a6747bd06e9
-C:\Documents and Settings\Administrator\Desktop>
 ```
