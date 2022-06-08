@@ -13,8 +13,6 @@ categories:
 tags:
   - Script
   - Linux
-  - Users
-  - Groups
 
 ---
 
