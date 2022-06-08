@@ -23,7 +23,7 @@ tags:
 [Script Bash](https://github.com/themaxterone/scriptUsrGrp/blob/main/usrgrp.sh) 
 
 
-This is a simple script provides the following information of all the users that are registered on the system and match them with their **Ids**, **Groups**, type of **Bash**, location of **Home** and the **Shell** which he uses.
+This is a simple script provides the following information of all the users that are registered on the system and match them with their **IDs**, **Groups**, type of **Bash**, location of **Home** and the **Shell** which he uses.
 
 
 **Tested on:**
