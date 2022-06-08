@@ -5,7 +5,7 @@ excerpt: "Script Users & Groups Linux"
 date: 2022-06-28
 classes: wide
 header:
-  icon: /assets/images/scripts/script.png
+  icon: /assets/images/hackthebox.webp
   teaser_home_page: true
   teaser: /assets/images/scripts/script.png
 categories:
