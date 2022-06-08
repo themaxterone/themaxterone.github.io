@@ -16,11 +16,11 @@ tags:
 
 ---
 
-# UsrGrp.sh
+
 
 [Repository](https://github.com/themaxterone/scriptUsrGrp) 
 
-[Script Bash](https://github.com/themaxterone/scriptUsrGrp/blob/main/usrgrp.sh) 
+[UsrGrp.sh bash script](https://github.com/themaxterone/scriptUsrGrp/blob/main/usrgrp.sh) 
 
 
 This is a simple script provides the following information of all the users that are registered on the system and match them with their **IDs**, **Groups**, type of **Bash**, location of **Home** and the **Shell** which he uses.
