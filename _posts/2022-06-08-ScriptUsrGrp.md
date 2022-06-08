@@ -2,7 +2,7 @@
 layout: single
 title: Script-UsrGrp
 excerpt: "Script Users & Groups Linux"
-date: 2022-06-28
+date: 2022-06-08
 classes: wide
 header:
   icon: /assets/images/hackthebox.webp
@@ -15,7 +15,7 @@ tags:
   - Linux
 
 ---
-F
+
 # UsrGrp.sh
 
 [Repository](https://github.com/themaxterone/scriptUsrGrp) 
