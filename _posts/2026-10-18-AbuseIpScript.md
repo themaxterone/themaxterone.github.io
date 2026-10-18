@@ -23,22 +23,29 @@ tags:
 [ipsaercher.py bash script](https://github.com/themaxterone/AbuseIP-Search-Script/blob/main/ipsaercher.py) 
 
 
-This is a simple script provides the following information of all the users that are registered on the system and match them with their **IDs**, **Groups**, type of **Bash**, location of **Home** and the **Shell** which he uses.
+A comprehensive Python utility to inspect single IP addresses or process bulk IP lists against the **AbuseIPDB API v2**. It displays detailed information and color-coded risk bars directly in the terminal and automatically generates an interactive HTML dashboard with client-side searching and risk-based filtering.
 
-
-**Tested on:**
-
-This script works on **Arch Linux**, **Kali Linux**, **Parrot Os**, **Ubuntu 16++.00** & **Debian**
-
+1. **Query Engine**: Connects via HTTPS to the official AbuseIPDB endpoint (`https://api.abuseipdb.com/api/v2/check`) using your private API key.
+2. **Category Normalization**: Parses numerical attack category IDs returned by the API (e.g., SSH, Port Scan, Brute-Force, Bad Web Bot) and translates them into human-readable labels.
+3. **Regex Extraction**: When given a text file, a regular expression extracts valid IPv4 addresses and discards duplicates while preserving order.
+4. **Interactive Dashboard**: The generated `.html` file is completely standalone (no external CSS/JS frameworks required) and can be opened in any web browser.
 
 Example of result:
 
-```txt
----------------------------------------------------------------------------
-| Usr: maxter || Id: 1000 || Home: /home/maxter || Shell: /usr/bin/zsh |
----------------------------------------------------------------------------
-                                Grupos:
-Grupo: wheel || ID: 998
-Grupo: maxter || ID: 1000
-Grupo: vboxusers || ID: 108
+```
+=================================================================
+ AbuseIPDB Lookup Result: 8.8.8.8
+=================================================================
+ Location     : US
+ ISP          : Google LLC
+ Domain       : google.com
+ Total Reports: 0 (Last 90 days)
+ Last Reported: Never
+
+ Malicious Score (Abuse Confidence):
+ [------------------------------] 0%
+
+ Reported Attack Categories:
+  - None (IP clean / No reports)
+=================================================================
 ```
