@@ -2,7 +2,7 @@
 layout: single
 title: Script-IpAbuseIP
 excerpt: "Python Script to use AbuseIP via API"
-date: 2022-06-08
+date: 2026-10-18
 classes: wide
 header:
   icon: /assets/images/scripts/script.webp
