@@ -1,24 +1,30 @@
----
-layout: default
----
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>404 — themaxterone</title>
+<meta name="description" content="Page not found.">
+<meta property="og:title" content="404 — themaxterone">
+<meta property="og:description" content="Page not found.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#07090c">
+<link rel="icon" href="/assets/images/maxteravatar.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/site.css">
 
-<style type="text/css" media="screen">
-  .container {
-    margin: 10px auto;
-    max-width: 600px;
-    text-align: center;
-  }
-  h1 {
-    margin: 30px 0;
-    font-size: 4em;
-    line-height: 1;
-    letter-spacing: -1px;
-  }
-</style>
-
-<div class="container">
-  <h1>404</h1>
-
-  <p><strong>Page not found :(</strong></p>
-  <p>The requested page could not be found.</p>
-</div>
+</head>
+<body>
+<main class="notfound">
+  <div class="terminal">
+    <div class="terminal-bar"><span class="code-dots"><i></i><i></i><i></i></span><span>bash</span></div>
+    <div class="terminal-body">
+      <p>$ cd $REQUESTED_PAGE</p>
+      <p class="err">bash: 404: no such file or directory</p>
+      <p>$ <a href="/">cd ~</a></p>
+    </div>
+  </div>
+</main>
+</body>
+</html>

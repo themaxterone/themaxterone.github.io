@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Script-IpAbuseIP — themaxterone</title>
+<meta name="description" content="Python Script to use AbuseIP via API">
+<meta property="og:title" content="Script-IpAbuseIP — themaxterone">
+<meta property="og:description" content="Python Script to use AbuseIP via API">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#07090c">
+<link rel="icon" href="../assets/images/maxteravatar.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/site.css">
+
+</head>
+<body class="post-page">
+<div class="progress" aria-hidden="true"><div id="progress-bar"></div></div>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="../" aria-label="themaxterone home"><img src="../assets/images/maxteravatar.png" alt="" width="32" height="32"><span><b>~/</b>themaxterone</span></a>
+    <button class="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span></button>
+    <nav class="nav-links" id="nav-links">
+      <a href="../">home</a>
+      <a href="../writeups/" class="active">write-ups</a>
+      <a href="../writeups/?cat=Scripts">tools</a>
+      <a href="../about/">about</a>
+      <a class="nav-cta" href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github ↗</a>
+    </nav>
+  </div>
+</header>
+<main>
+<header class="post-head">
+  <div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../">home</a> / <a href="../writeups/">write-ups</a> / <span>Script-IpAbuseIP</span></nav>
+    <p class="eyebrow"><span class="dot"></span> tool</p>
+    <h1>Script-IpAbuseIP <img class="title-icon" src="../assets/images/scripts/script.webp" alt="" width="36" height="36"></h1>
+    <div class="card-meta"><time datetime="2026-10-18">Oct 18, 2026</time><span>·</span><span>1 min read</span></div>
+    <div class="chips"><a class="chip" href="../writeups/?tag=Script">Script</a><a class="chip" href="../writeups/?tag=Python">Python</a></div>
+  </div>
+</header>
+<div class="wrap post-layout">
+  <aside class="toc toc-empty"></aside>
+  <article class="prose" lang="es">
+<p><a href="https://github.com/themaxterone/AbuseIP-Search-Script" target="_blank" rel="noopener noreferrer">Repository</a></p>
+<p><a href="https://github.com/themaxterone/AbuseIP-Search-Script/blob/main/ipsaercher.py" target="_blank" rel="noopener noreferrer">ipsaercher.py bash script</a> </p>
+<p>A comprehensive Python utility to inspect single IP addresses or process bulk IP lists against the <strong>AbuseIPDB API v2</strong>. It displays detailed information and color-coded risk bars directly in the terminal and automatically generates an interactive HTML dashboard with client-side searching and risk-based filtering.</p>
+<ol>
+<li><strong>Query Engine</strong>: Connects via HTTPS to the official AbuseIPDB endpoint (<code>https://api.abuseipdb.com/api/v2/check</code>) using your private API key.</li>
+<li><strong>Category Normalization</strong>: Parses numerical attack category IDs returned by the API (e.g., SSH, Port Scan, Brute-Force, Bad Web Bot) and translates them into human-readable labels.</li>
+<li><strong>Regex Extraction</strong>: When given a text file, a regular expression extracts valid IPv4 addresses and discards duplicates while preserving order.</li>
+<li><strong>Interactive Dashboard</strong>: The generated <code>.html</code> file is completely standalone (no external CSS/JS frameworks required) and can be opened in any web browser.</li>
+</ol>
+<p>Example of result:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">output</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>=================================================================
+ AbuseIPDB Lookup Result: 8.8.8.8
+=================================================================
+ Location     : US
+ ISP          : Google LLC
+ Domain       : google.com
+ Total Reports: 0 (Last 90 days)
+ Last Reported: Never
+
+ Malicious Score (Abuse Confidence):
+ [------------------------------] 0%
+
+ Reported Attack Categories:
+  - None (IP clean / No reports)
+=================================================================</code></pre></div>
+
+<p><a class="btn btn-primary" href="https://github.com/themaxterone/AbuseIP-Search-Script" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></p>
+  </article>
+</div>
+<nav class="wrap narrow pager" aria-label="More posts">
+  <a href="../ScriptUsrGrp/"><span>← older</span>Script-UsrGrp</a>
+  <span></span>
+</nav>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p><span class="prompt">$</span> echo "stay curious, stay legal"</p>
+    <p class="muted">© 2026 themaxterone · Hack The Box write-ups &amp; tools</p>
+    <p><a href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github.com/themaxterone</a></p>
+  </div>
+</footer>
+<script src="../assets/js/site.js" defer></script>
+</body>
+</html>

