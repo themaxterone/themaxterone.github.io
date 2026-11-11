@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Script-SOCAnalystSuite — themaxterone</title>
+<meta name="description" content="Desktop SOC investigation suite: Entra ID sign-ins, risky users, Intigriti &amp; AbuseIPDB IP intel">
+<meta property="og:title" content="Script-SOCAnalystSuite — themaxterone">
+<meta property="og:description" content="Desktop SOC investigation suite: Entra ID sign-ins, risky users, Intigriti &amp; AbuseIPDB IP intel">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#07090c">
+<link rel="icon" href="../assets/images/maxteravatar.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/site.css">
+
+</head>
+<body class="post-page">
+<div class="progress" aria-hidden="true"><div id="progress-bar"></div></div>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="../" aria-label="themaxterone home"><img src="../assets/images/maxteravatar.png" alt="" width="32" height="32"><span><b>~/</b>themaxterone</span></a>
+    <button class="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span></button>
+    <nav class="nav-links" id="nav-links">
+      <a href="../">home</a>
+      <a href="../writeups/" class="active">write-ups</a>
+      <a href="../writeups/?cat=Scripts">tools</a>
+      <a href="../about/">about</a>
+      <a class="nav-cta" href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github ↗</a>
+    </nav>
+  </div>
+</header>
+<main>
+<header class="post-head">
+  <div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../">home</a> / <a href="../writeups/">write-ups</a> / <span>Script-SOCAnalystSuite</span></nav>
+    <p class="eyebrow"><span class="dot"></span> tool</p>
+    <h1>Script-SOCAnalystSuite <img class="title-icon" src="../assets/images/scripts/script.webp" alt="" width="36" height="36"></h1>
+    <div class="card-meta"><time datetime="2026-11-11">Nov 11, 2026</time><span>·</span><span>3 min read</span></div>
+    <div class="chips"><a class="chip" href="../writeups/?tag=Script">Script</a><a class="chip" href="../writeups/?tag=Python">Python</a><a class="chip" href="../writeups/?tag=SOC">SOC</a></div>
+  </div>
+</header>
+<div class="wrap post-layout">
+  <aside class="toc" aria-label="Table of contents"><p class="toc-title">// contents</p><ol><li><a href="#overview">Overview</a></li><li><a href="#key-features">Key features</a></li><li><a href="#requirements">Requirements</a></li><li><a href="#installation">Installation</a></li><li><a href="#configuration">Configuration</a></li><li><a href="#usage">Usage</a></li><li><a href="#modules">Modules</a></li><li><a href="#output-structure">Output structure</a></li><li><a href="#troubleshooting">Troubleshooting</a></li></ol></aside>
+  <article class="prose" lang="es">
+<p><a href="https://github.com/themaxterone/SOC-Analiyst-Suite-Script" target="_blank" rel="noopener noreferrer">Repository</a></p>
+<p><a href="https://github.com/themaxterone/SOC-Analiyst-Suite-Script/blob/main/gui_soc_suite-v3.py" target="_blank" rel="noopener noreferrer">gui_soc_suite-v3.py python script</a></p>
+<h2 id="overview"><a class="anchor" href="#overview" aria-hidden="true">#</a>Overview</h2>
+<p><strong>SOC Analyst Suite — Fluent Edition</strong> is a desktop security investigation app built with a Windows 11 Fluent look (<code>customtkinter</code>). It brings into one window:</p>
+<ul>
+<li>Microsoft <strong>Entra ID sign-in audits</strong> (single account and bulk).</li>
+<li><strong>Entra ID Protection risky user</strong> detection (<code>High</code>, <code>Medium</code>, <code>Low</code>, <code>All</code>).</li>
+<li><strong>Intigriti</strong> bug bounty IP verification.</li>
+<li><strong>AbuseIPDB</strong> threat intelligence lookups.</li>
+<li>Concurrent <strong>API quota monitoring</strong>.</li>
+</ul>
+<p>It runs with standard <code>python.exe</code> (no <code>.pyw</code>, which AppLocker / WDAC often block) and moves every network call, OAuth2 PKCE login and bulk lookup to background threads, so the interface never freezes.</p>
+<h2 id="key-features"><a class="anchor" href="#key-features" aria-hidden="true">#</a>Key features</h2>
+<ul>
+<li><strong>Fluent GUI</strong> with rounded controls and an instant <strong>dark / light mode</strong> toggle.</li>
+<li><strong>Color-coded consoles</strong>: successes in green, threats and errors in red, rate limits in yellow, info in blue.</li>
+<li><strong>Single &amp; bulk sign-in auditing</strong>: one UPN or a <code>.txt</code> with many accounts, exported to a unified CSV and an HTML report with a per-account breakdown.</li>
+<li><strong>Risky users scanner</strong>: pick the risk level, filter by <em>Risk Updated (days ago)</em> and launch a one-click bulk sign-in audit of every account found.</li>
+<li><strong>Prioritized IP threat engine</strong>:<ul>
+<li>Checks <strong>Intigriti</strong> first: confirmed researcher traffic skips AbuseIPDB (saves quota) and is left out of exports.</li>
+<li>Low-confidence IPs (<code>abuseConfidenceScore &lt;= 10%</code>) are dropped, so only actionable threats reach the reports and blocklist.</li>
+<li><strong>AbuseIPDB</strong> enrichment with in-memory cache, private / loopback range exclusion and automatic <strong>key rotation</strong> on HTTP 429.</li>
+</ul>
+</li>
+<li><strong>Interactive HTML dashboards</strong> with metric cards, live search and filters (<em>All, Success, Failures, Malicious, Suspicious, Clean</em>).</li>
+</ul>
+<h2 id="requirements"><a class="anchor" href="#requirements" aria-hidden="true">#</a>Requirements</h2>
+<ul>
+<li>Python 3.8+ (standard Python or Anaconda).</li>
+<li>Libraries: <code>customtkinter</code>, <code>msal</code>, <code>requests</code>, <code>urllib3</code>.</li>
+<li>Microsoft Entra ID P2 for risky users (P1 for sign-ins).</li>
+<li>Delegated permissions: <code>AuditLog.Read.All</code> and <code>IdentityRiskyUser.Read.All</code>.</li>
+<li>Analyst role: <em>Security Reader</em>, <em>Security Operator</em>, <em>Global Reader</em> or <em>Security Administrator</em>.</li>
+</ul>
+<h2 id="installation"><a class="anchor" href="#installation" aria-hidden="true">#</a>Installation</h2>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>pip install customtkinter msal requests urllib3</code></pre></div>
+<h2 id="configuration"><a class="anchor" href="#configuration" aria-hidden="true">#</a>Configuration</h2>
+<p>Edit the top of the script with your Intigriti token and AbuseIPDB keys:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code><span class="hljs-comment"># Microsoft Graph Command Line Tools official public Client ID</span>
+CLIENT_ID = <span class="hljs-string">&quot;14d82eec-204b-4c2f-b7e8-296a70dab67e&quot;</span>
+AUTHORITY = <span class="hljs-string">&quot;https://login.microsoftonline.com/organizations&quot;</span>
+
+<span class="hljs-comment"># Intigriti Access Token (Company / Researcher IP Verification)</span>
+INTIGRITI_ACCESS_TOKEN = <span class="hljs-string">&quot;YOUR_INTIGRITI_ACCESS_TOKEN&quot;</span>
+INTIGRITI_API_URL = <span class="hljs-string">&quot;https://api.intigriti.com/external/company/v2/iplookup&quot;</span>
+
+<span class="hljs-comment"># AbuseIPDB API Keys Pool</span>
+ABUSEIPDB_API_KEYS = [
+    <span class="hljs-string">&quot;YOUR_ABUSEIPDB_KEY_1&quot;</span>,
+    <span class="hljs-string">&quot;YOUR_ABUSEIPDB_KEY_2&quot;</span>,
+    <span class="hljs-string">&quot;YOUR_ABUSEIPDB_KEY_3&quot;</span>
+]</code></pre></div>
+<h2 id="usage"><a class="anchor" href="#usage" aria-hidden="true">#</a>Usage</h2>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">cmd</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code><span class="hljs-built_in">cd</span> &quot;C:\Users\&lt;YourUser&gt;\Documents\iplookup&quot;
+python gui_soc_suite.py</code></pre></div>
+<h2 id="modules"><a class="anchor" href="#modules" aria-hidden="true">#</a>Modules</h2>
+<h3 id="tab-1-user-sign-ins-audit"><a class="anchor" href="#tab-1-user-sign-ins-audit" aria-hidden="true">#</a>Tab 1 · User sign-ins audit</h3>
+<p>Audit one email / UPN or load a <code>.txt</code> with many accounts (deduplicated automatically). Choose the lookback in days (default <code>15</code>) and optionally enrich source IPs with AbuseIPDB. Reports are saved in <code>signInsLogs/</code>.</p>
+<h3 id="tab-2-risky-users"><a class="anchor" href="#tab-2-risky-users" aria-hidden="true">#</a>Tab 2 · Risky users</h3>
+<p>Query <code>/identityProtection/riskyUsers</code> by risk level and recency (default <code>7</code> days, <code>0</code> = all active detections), then run a bulk sign-in investigation over every detected account.</p>
+<h3 id="tab-3-ip-threat-searcher"><a class="anchor" href="#tab-3-ip-threat-searcher" aria-hidden="true">#</a>Tab 3 · IP threat searcher</h3>
+<p>Check a single IPv4 or a bulk <code>.txt</code> (mixed text and <code>/32</code> masks supported), with optional Intigriti verification first. Outputs in <code>abuseIpLogs/</code>:</p>
+<ul>
+<li><code>abuseipdb_&lt;name&gt;_&lt;timestamp&gt;.html</code> — interactive dashboard.</li>
+<li><code>extended_&lt;name&gt;_&lt;timestamp&gt;.csv</code> — detailed results.</li>
+<li><code>blocklist_&lt;name&gt;_&lt;timestamp&gt;.txt</code> — ready-to-import firewall blocklist (<code>IP/32</code>).</li>
+</ul>
+<h3 id="tab-4-api-keys-status"><a class="anchor" href="#tab-4-api-keys-status" aria-hidden="true">#</a>Tab 4 · API keys status</h3>
+<p>Checks every AbuseIPDB key in parallel and shows its status (<em>Active</em>, <em>Exhausted (429)</em>, <em>Unauthorized (401)</em>), remaining quota and reset time.</p>
+<h2 id="output-structure"><a class="anchor" href="#output-structure" aria-hidden="true">#</a>Output structure</h2>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">text</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>├── gui_soc_suite.py
+├── README.md
+├── signInsLogs/
+│   ├── signins_intel_&lt;user&gt;_&lt;days&gt;d_&lt;timestamp&gt;.csv
+│   ├── signins_intel_&lt;user&gt;_&lt;days&gt;d_&lt;timestamp&gt;.html
+│   ├── signins_intel_bulk_&lt;N&gt;accounts_&lt;days&gt;d_&lt;timestamp&gt;.html
+│   └── signins_intel_RISKY_&lt;LEVEL&gt;_&lt;N&gt;accounts_&lt;days&gt;d_&lt;timestamp&gt;.html
+└── abuseIpLogs/
+    ├── abuseipdb_&lt;sourcefile&gt;_&lt;timestamp&gt;.html
+    ├── extended_&lt;sourcefile&gt;_&lt;timestamp&gt;.csv
+    └── blocklist_&lt;sourcefile&gt;_&lt;timestamp&gt;.txt</code></pre></div>
+<h2 id="troubleshooting"><a class="anchor" href="#troubleshooting" aria-hidden="true">#</a>Troubleshooting</h2>
+<ul>
+<li><strong><code>AADSTS65002</code> (preauthorization required)</strong>: use the Microsoft Graph Command Line Tools client ID shown above, or register your own app with <code>AuditLog.Read.All</code> and <code>IdentityRiskyUser.Read.All</code>.</li>
+<li><strong><code>CERTIFICATE_VERIFY_FAILED</code> behind a corporate SSL proxy</strong>: the suite disables <code>urllib3</code> warnings and uses <code>verify=False</code> for outbound API calls.</li>
+<li><strong>Privacy</strong>: tokens stay in local memory, private IP ranges are filtered before any external query, and all reports are saved only to your disk.</li>
+</ul>
+
+<p><a class="btn btn-primary" href="https://github.com/themaxterone/SOC-Analiyst-Suite-Script" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></p>
+  </article>
+</div>
+<nav class="wrap narrow pager" aria-label="More posts">
+  <a href="../AbuseIpScript/"><span>← older</span>Script-IpAbuseIP</a>
+  <span></span>
+</nav>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p><span class="prompt">$</span> echo "stay curious, stay legal"</p>
+    <p class="muted">© 2026 themaxterone · Hack The Box write-ups &amp; tools</p>
+    <p><a href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github.com/themaxterone</a></p>
+  </div>
+</footer>
+<script src="../assets/js/site.js" defer></script>
+</body>
+</html>
