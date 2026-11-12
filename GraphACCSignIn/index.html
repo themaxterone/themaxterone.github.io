@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Script-GraphACCSignIn — themaxterone</title>
+<meta name="description" content="Entra ID sign-in audit for one account via Microsoft Graph, with CSV export and an interactive HTML dashboard">
+<meta property="og:title" content="Script-GraphACCSignIn — themaxterone">
+<meta property="og:description" content="Entra ID sign-in audit for one account via Microsoft Graph, with CSV export and an interactive HTML dashboard">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#07090c">
+<link rel="icon" href="../assets/images/maxteravatar.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/site.css">
+
+</head>
+<body class="post-page">
+<div class="progress" aria-hidden="true"><div id="progress-bar"></div></div>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="../" aria-label="themaxterone home"><img src="../assets/images/maxteravatar.png" alt="" width="32" height="32"><span><b>~/</b>themaxterone</span></a>
+    <button class="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span></button>
+    <nav class="nav-links" id="nav-links">
+      <a href="../">home</a>
+      <a href="../writeups/" class="active">write-ups</a>
+      <a href="../writeups/?cat=Scripts">tools</a>
+      <a href="../about/">about</a>
+      <a class="nav-cta" href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github ↗</a>
+    </nav>
+  </div>
+</header>
+<main>
+<header class="post-head">
+  <div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../">home</a> / <a href="../writeups/">write-ups</a> / <span>Script-GraphACCSignIn</span></nav>
+    <p class="eyebrow"><span class="dot"></span> tool</p>
+    <h1>Script-GraphACCSignIn <img class="title-icon" src="../assets/images/scripts/script.webp" alt="" width="36" height="36"></h1>
+    <div class="card-meta"><time datetime="2026-10-19">Oct 19, 2026</time><span>·</span><span>3 min read</span></div>
+    <div class="chips"><a class="chip" href="../writeups/?tag=Script">Script</a><a class="chip" href="../writeups/?tag=Python">Python</a><a class="chip" href="../writeups/?tag=SOC">SOC</a></div>
+  </div>
+</header>
+<div class="wrap post-layout">
+  <aside class="toc" aria-label="Table of contents"><p class="toc-title">// contents</p><ol><li><a href="#overview">Overview</a></li><li><a href="#key-features">Key features</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#requirements">Requirements</a></li><li><a href="#installation">Installation</a></li><li><a href="#usage">Usage</a></li><li><a href="#outputs">Outputs</a></li><li><a href="#corporate-proxy-ssl">Corporate proxy &amp; SSL</a></li></ol></aside>
+  <article class="prose" lang="en">
+<p><a href="https://github.com/themaxterone/Graph-ACC-Sign-In" target="_blank" rel="noopener noreferrer">Repository</a></p>
+<p><a href="https://github.com/themaxterone/Graph-ACC-Sign-In/blob/main/graph_signins.py" target="_blank" rel="noopener noreferrer">graph_signins.py python script</a></p>
+<h2 id="overview"><a class="anchor" href="#overview" aria-hidden="true">#</a>Overview</h2>
+<p><strong>Microsoft Graph User Sign-in Audit Tool</strong> is a Python utility for SOC analysts, incident responders and Entra ID admins. It pulls the authentication events of one account from the <strong>Microsoft Graph API</strong> (<code>/auditLogs/signIns</code>) using interactive PKCE login, exports a CSV report and builds a self-contained HTML dashboard.</p>
+<h2 id="key-features"><a class="anchor" href="#key-features" aria-hidden="true">#</a>Key features</h2>
+<ul>
+<li><strong>No app registration needed</strong>: uses the public Microsoft Azure CLI client ID (<code>04b07795-8ddb-461a-bbee-02f9e1bf7b46</code>) with browser-based PKCE login.</li>
+<li><strong>Account picker</strong> forced (<code>prompt=&quot;select_account&quot;</code>) to switch between analyst identities easily.</li>
+<li><strong>Email normalization</strong>: trims spaces and lowercases the target user for accurate OData queries.</li>
+<li><strong>Custom time window</strong> with <code>-d</code> / <code>--days</code> (default: last 15 days).</li>
+<li><strong>Automatic pagination</strong> following <code>@odata.nextLink</code> until every log is collected.</li>
+<li><strong>Error code translation</strong>: common Entra ID codes (<code>50126</code>, <code>50053</code>, <code>53003</code>…) turned into readable explanations.</li>
+<li><strong>Two console modes</strong>: quiet progress bars by default, or event-by-event colored output with <code>-v</code>.</li>
+<li><strong>CSV export</strong> (UTF-8-BOM) and an <strong>interactive HTML dashboard</strong> with live search and <em>All / Success / Failures</em> filters.</li>
+<li><strong>Corporate proxy ready</strong>: works behind SSL/TLS inspection.</li>
+</ul>
+<h2 id="how-it-works"><a class="anchor" href="#how-it-works" aria-hidden="true">#</a>How it works</h2>
+<ol>
+<li><strong>Authentication</strong>: MSAL creates a <code>PublicClientApplication</code> and requests <code>AuditLog.Read.All</code>; your browser opens to sign in and complete MFA.</li>
+<li><strong>Query</strong>: a UTC cutoff is calculated from the day offset and an OData filter is built.</li>
+<li><strong>Retrieval</strong>: GET requests to <code>https://graph.microsoft.com/v1.0/auditLogs/signIns</code>, paginating while <code>@odata.nextLink</code> exists.</li>
+<li><strong>Parsing</strong>: date, app, IP and location, OS and browser, status with error explanation and Conditional Access results.</li>
+<li><strong>Reports</strong>: summary in the console plus <code>.csv</code> and <code>.html</code> files.</li>
+</ol>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">text</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>userPrincipalName eq '&lt;user&gt;' and createdDateTime ge &lt;UTC_DATE&gt;</code></pre></div>
+<h2 id="requirements"><a class="anchor" href="#requirements" aria-hidden="true">#</a>Requirements</h2>
+<ul>
+<li>Python 3.8+ (standard Python or Anaconda).</li>
+<li>Libraries: <code>msal</code>, <code>requests</code>, <code>urllib3</code>.</li>
+<li>Microsoft Entra ID P1 or P2 (or Microsoft 365 E3/E5).</li>
+<li>Delegated permission: <code>AuditLog.Read.All</code>.</li>
+</ul>
+<p>The analyst account must have one of these roles:</p>
+<ul>
+<li><em>Security Reader</em> (recommended for SOC analysts)</li>
+<li><em>Reports Reader</em></li>
+<li><em>Global Reader</em></li>
+<li><em>Security Administrator</em></li>
+<li><em>Global Administrator</em></li>
+</ul>
+<h2 id="installation"><a class="anchor" href="#installation" aria-hidden="true">#</a>Installation</h2>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>pip install msal requests urllib3</code></pre></div>
+<p>With Anaconda: <code>conda install requests</code> and then <code>pip install msal urllib3</code>.</p>
+<h2 id="usage"><a class="anchor" href="#usage" aria-hidden="true">#</a>Usage</h2>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code># Default: last 15 days, quiet progress mode
+python graph_signins.py -u user@company.com
+
+# Custom time window
+python graph_signins.py -u user@company.com -d 7
+python graph_signins.py -u user@company.com -d 30
+
+# Verbose, event by event
+python graph_signins.py -u user@company.com -d 30 -v</code></pre></div>
+<div class="table-wrap"><table><thead><tr><th>Argument</th><th>Default</th><th>Required</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>-u</code>, <code>--user</code></td><td>—</td><td><strong>Yes</strong></td><td>Target UserPrincipalName or email.</td></tr>
+<tr><td><code>-d</code>, <code>--days</code></td><td><code>15</code></td><td>No</td><td>Number of past days to inspect.</td></tr>
+<tr><td><code>-v</code>, <code>--verbose</code></td><td><code>False</code></td><td>No</td><td>Event-by-event output in the terminal.</td></tr>
+</tbody></table></div>
+<h2 id="outputs"><a class="anchor" href="#outputs" aria-hidden="true">#</a>Outputs</h2>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">text</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>=====================================================================================
+ SIGN-IN EVENTS SUMMARY (15 DAYS) | UNIQUE IPs CHECKED: 3
+=====================================================================================
+ Total Logins   : 25
+ Successful     : 23
+ Failed         : 2
+ Unique IPs     : 3
+=====================================================================================</code></pre></div>
+<ul>
+<li><code>signins_&lt;user&gt;_&lt;days&gt;d_&lt;timestamp&gt;.csv</code> — full export for Excel or a SIEM (date, user, app, status, error code and meaning, IP, location, OS, browser, Conditional Access).</li>
+<li><code>signins_&lt;user&gt;_&lt;days&gt;d_&lt;timestamp&gt;.html</code> — standalone dashboard with metric cards, instant search, one-click filters and error explanations.</li>
+</ul>
+<h2 id="corporate-proxy-ssl"><a class="anchor" href="#corporate-proxy-ssl" aria-hidden="true">#</a>Corporate proxy &amp; SSL</h2>
+<p>Behind a corporate proxy doing SSL/TLS inspection, Python HTTPS calls can fail with <code>CERTIFICATE_VERIFY_FAILED</code>. The script handles it by silencing <code>urllib3</code> warnings and using <code>verify=False</code> on outbound requests:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+requests.get(url, headers=headers, verify=False)</code></pre></div>
+
+<p><a class="btn btn-primary" href="https://github.com/themaxterone/Graph-ACC-Sign-In" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></p>
+  </article>
+</div>
+<nav class="wrap narrow pager" aria-label="More posts">
+  <a href="../GraphSigninsAbuseIP/"><span>← older</span>Script-GraphSigninsAbuseIP</a>
+  <a class="right" href="../SOCAnalystSuite/"><span>newer →</span>Script-SOCAnalystSuite</a>
+</nav>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p><span class="prompt">$</span> echo "stay curious, stay legal"</p>
+    <p class="muted">© 2026 themaxterone · Hack The Box write-ups &amp; tools</p>
+    <p><a href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github.com/themaxterone</a></p>
+  </div>
+</footer>
+<script src="../assets/js/site.js" defer></script>
+</body>
+</html>

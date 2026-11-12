@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Script-CheckAbuseIPDBKeys — themaxterone</title>
+<meta name="description" content="Check the status, daily limit and remaining quota of many AbuseIPDB API keys at once">
+<meta property="og:title" content="Script-CheckAbuseIPDBKeys — themaxterone">
+<meta property="og:description" content="Check the status, daily limit and remaining quota of many AbuseIPDB API keys at once">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#07090c">
+<link rel="icon" href="../assets/images/maxteravatar.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/site.css">
+
+</head>
+<body class="post-page">
+<div class="progress" aria-hidden="true"><div id="progress-bar"></div></div>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="../" aria-label="themaxterone home"><img src="../assets/images/maxteravatar.png" alt="" width="32" height="32"><span><b>~/</b>themaxterone</span></a>
+    <button class="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span></button>
+    <nav class="nav-links" id="nav-links">
+      <a href="../">home</a>
+      <a href="../writeups/" class="active">write-ups</a>
+      <a href="../writeups/?cat=Scripts">tools</a>
+      <a href="../about/">about</a>
+      <a class="nav-cta" href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github ↗</a>
+    </nav>
+  </div>
+</header>
+<main>
+<header class="post-head">
+  <div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../">home</a> / <a href="../writeups/">write-ups</a> / <span>Script-CheckAbuseIPDBKeys</span></nav>
+    <p class="eyebrow"><span class="dot"></span> tool</p>
+    <h1>Script-CheckAbuseIPDBKeys <img class="title-icon" src="../assets/images/scripts/script.webp" alt="" width="36" height="36"></h1>
+    <div class="card-meta"><time datetime="2026-10-19">Oct 19, 2026</time><span>·</span><span>3 min read</span></div>
+    <div class="chips"><a class="chip" href="../writeups/?tag=Script">Script</a><a class="chip" href="../writeups/?tag=Python">Python</a><a class="chip" href="../writeups/?tag=SOC">SOC</a></div>
+  </div>
+</header>
+<div class="wrap post-layout">
+  <aside class="toc" aria-label="Table of contents"><p class="toc-title">// contents</p><ol><li><a href="#overview">Overview</a></li><li><a href="#key-features">Key features</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#requirements">Requirements</a></li><li><a href="#installation">Installation</a></li><li><a href="#configuration">Configuration</a></li><li><a href="#usage">Usage</a></li><li><a href="#output-fields">Output fields</a></li><li><a href="#corporate-proxy-ssl">Corporate proxy &amp; SSL</a></li></ol></aside>
+  <article class="prose" lang="en">
+<p><a href="https://github.com/themaxterone/Check_AbuseIpdb_Keys" target="_blank" rel="noopener noreferrer">Repository</a></p>
+<p><a href="https://github.com/themaxterone/Check_AbuseIpdb_Keys/blob/main/check_abuseipdb_keys.py" target="_blank" rel="noopener noreferrer">check_abuseipdb_keys.py python script</a></p>
+<h2 id="overview"><a class="anchor" href="#overview" aria-hidden="true">#</a>Overview</h2>
+<p><strong>AbuseIPDB API Keys Quota Checker</strong> is a small, fast Python utility that shows the real-time status, daily limit and remaining queries of several <strong>AbuseIPDB API keys</strong> in parallel. Handy when your other tools rotate through a pool of keys and you want to know how much quota is left.</p>
+<h2 id="key-features"><a class="anchor" href="#key-features" aria-hidden="true">#</a>Key features</h2>
+<ul>
+<li><strong>Concurrent checks</strong> with <code>ThreadPoolExecutor</code>: results for every key in seconds.</li>
+<li><strong>Quota metrics</strong> read from the <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code> and <code>X-RateLimit-Reset</code> headers.</li>
+<li><strong>Total capacity pool</strong>: sum of the remaining queries across every working key.</li>
+<li><strong>Key masking</strong> in the output (e.g. <code>4c9a12...98f1</code>) so secrets are never shown in full.</li>
+<li><strong>Corporate proxy ready</strong>: works behind SSL/TLS inspection.</li>
+</ul>
+<h2 id="how-it-works"><a class="anchor" href="#how-it-works" aria-hidden="true">#</a>How it works</h2>
+<ol>
+<li><strong>Lightweight probe</strong>: one <code>/check</code> request per key against a public resolver (<code>1.1.1.1</code>).</li>
+<li><strong>Header inspection</strong>: daily limit, remaining requests and reset time.</li>
+<li><strong>Status</strong>: <em>Active</em> (valid key with quota), <em>Exhausted (429)</em> or <em>Unauthorized (401)</em>.</li>
+<li><strong>Console table</strong> sorted by key order, with the total available pool at the bottom.</li>
+</ol>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">text</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>[Load API_KEYS] -&gt; [ThreadPoolExecutor]
+   ├─► Worker 1: /check (1.1.1.1) with key #1
+   ├─► Worker 2: /check (1.1.1.1) with key #2
+   └─► Worker N: /check (1.1.1.1) with key #N
+        │
+        ▼
+[Parse X-RateLimit-* headers] -&gt; [Active | Exhausted (429) | Unauthorized (401)]
+        │
+        ▼
+[Color-coded table + total remaining pool]</code></pre></div>
+<h2 id="requirements"><a class="anchor" href="#requirements" aria-hidden="true">#</a>Requirements</h2>
+<ul>
+<li>Python 3.8+ (standard Python or Anaconda).</li>
+<li>Libraries: <code>requests</code>, <code>urllib3</code>.</li>
+<li>One or more AbuseIPDB API keys.</li>
+</ul>
+<h2 id="installation"><a class="anchor" href="#installation" aria-hidden="true">#</a>Installation</h2>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>pip install requests urllib3</code></pre></div>
+<h2 id="configuration"><a class="anchor" href="#configuration" aria-hidden="true">#</a>Configuration</h2>
+<p>Open <code>check_abuseipdb_keys.py</code> and fill the <code>API_KEYS</code> list near the top:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>API_KEYS = [
+    "YOUR_FIRST_API_KEY",
+    "YOUR_SECOND_API_KEY",
+    "YOUR_THIRD_API_KEY"
+]</code></pre></div>
+<h2 id="usage"><a class="anchor" href="#usage" aria-hidden="true">#</a>Usage</h2>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>python check_abuseipdb_keys.py</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">text</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>[+] Checking API keys status concurrently against AbuseIPDB...
+
+#    | Key (Masked)     | Status             | Limit    | Remaining  | Used %   | Reset Time (UTC)
+1    | 4c9a12...98f1    | Active             | 1000     | 842        | 15.8%    | 2026-10-20 00:00:00 UTC
+2    | e10bf4...a12c    | Active             | 1000     | 990        | 1.0%     | 2026-10-20 00:00:00 UTC
+3    | f038de...51ab    | Exhausted (429)    | 1000     | 0          | 100.0%   | 2026-10-20 00:00:00 UTC
+ TOTAL AVAILABLE POOL: 1832 / 3000 queries remaining across all keys.</code></pre></div>
+<h2 id="output-fields"><a class="anchor" href="#output-fields" aria-hidden="true">#</a>Output fields</h2>
+<div class="table-wrap"><table><thead><tr><th>Column</th><th>Description</th></tr></thead><tbody>
+<tr><td><strong>#</strong></td><td>Position of the key in the <code>API_KEYS</code> list.</td></tr>
+<tr><td><strong>Key (Masked)</strong></td><td>First 6 and last 4 characters only.</td></tr>
+<tr><td><strong>Status</strong></td><td><code>Active</code>, <code>Exhausted (429)</code> or <code>Unauthorized (401)</code>.</td></tr>
+<tr><td><strong>Limit</strong></td><td>Maximum daily queries for the key tier.</td></tr>
+<tr><td><strong>Remaining</strong></td><td>Requests left before hitting the limit.</td></tr>
+<tr><td><strong>Used %</strong></td><td>Share of the daily quota already used.</td></tr>
+<tr><td><strong>Reset Time (UTC)</strong></td><td>When AbuseIPDB resets the counter.</td></tr>
+<tr><td><strong>TOTAL AVAILABLE POOL</strong></td><td>Sum of remaining queries across working keys.</td></tr>
+</tbody></table></div>
+<h2 id="corporate-proxy-ssl"><a class="anchor" href="#corporate-proxy-ssl" aria-hidden="true">#</a>Corporate proxy &amp; SSL</h2>
+<p>Behind a corporate proxy doing SSL/TLS inspection, Python HTTPS calls can fail with <code>CERTIFICATE_VERIFY_FAILED</code>. The script handles it by silencing <code>urllib3</code> warnings and using <code>verify=False</code> on outbound requests:</p>
+<div class="code-block"><div class="code-head"><span class="code-dots"><i></i><i></i><i></i></span><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code>import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+requests.get(url, headers=headers, verify=False)</code></pre></div>
+
+<p><a class="btn btn-primary" href="https://github.com/themaxterone/Check_AbuseIpdb_Keys" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></p>
+  </article>
+</div>
+<nav class="wrap narrow pager" aria-label="More posts">
+  <a href="../AbuseIpScript/"><span>← older</span>Script-IpAbuseIP</a>
+  <a class="right" href="../GraphSigninsAbuseIP/"><span>newer →</span>Script-GraphSigninsAbuseIP</a>
+</nav>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p><span class="prompt">$</span> echo "stay curious, stay legal"</p>
+    <p class="muted">© 2026 themaxterone · Hack The Box write-ups &amp; tools</p>
+    <p><a href="https://github.com/themaxterone" target="_blank" rel="noopener noreferrer">github.com/themaxterone</a></p>
+  </div>
+</footer>
+<script src="../assets/js/site.js" defer></script>
+</body>
+</html>
